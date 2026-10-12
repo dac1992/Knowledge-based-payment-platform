@@ -25,6 +25,25 @@ function workspaceOf(repoRelativePath) {
 
 const quote = (names) => names.map((n) => `"${n}"`).join(' ')
 
+/**
+ * 不参与自动格式化的路径。
+ *
+ * 两类必须排除：
+ * 1. 生成物（OpenAPI 文档、契约类型）——被格式化会与 CI 重新生成的版本产生差异，
+ *    直接导致契约校验失败。
+ * 2. 包管理器锁文件 —— pnpm 有自己的写法，被 Prettier 改写后每次 install 都会
+ *    产生无意义的 diff。
+ */
+const EXCLUDED_PATTERNS = [
+  /^packages\/api-client\/src\/generated\//,
+  /^services\/api\/docs\//,
+  /^pnpm-lock\.yaml$/,
+  /^docs\//,
+]
+
+const isExcluded = (repoRelativePath) =>
+  EXCLUDED_PATTERNS.some((pattern) => pattern.test(repoRelativePath))
+
 /** 按 workspace 分组，分别在其目录内执行 eslint --fix。 */
 function eslintCommands(repoRelativeFiles) {
   const groups = new Map()
@@ -45,13 +64,15 @@ function eslintCommands(repoRelativeFiles) {
 
 export default {
   '*.{js,mjs,cjs,ts,vue}': (files) => {
-    const relPaths = files.map(toRepoRelative)
+    const relPaths = files.map(toRepoRelative).filter((f) => !isExcluded(f))
+    if (relPaths.length === 0) return []
     // 根级配置文件（如 lint-staged.config.mjs）没有对应的 eslint 配置，
     // 只做格式化，不强行 lint，避免误报阻断提交。
     return [...eslintCommands(relPaths), `pnpm exec prettier --write ${quote(relPaths)}`]
   },
-  '*.{json,md,yml,yaml,css,scss,html}': (files) => [
-    `pnpm exec prettier --write ${quote(files.map(toRepoRelative))}`,
-  ],
+  '*.{json,md,yml,yaml,css,scss,html}': (files) => {
+    const relPaths = files.map(toRepoRelative).filter((f) => !isExcluded(f))
+    return relPaths.length > 0 ? [`pnpm exec prettier --write ${quote(relPaths)}`] : []
+  },
   '*.go': ['gofmt -w'],
 }
