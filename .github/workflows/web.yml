@@ -1,23 +1,30 @@
 name: Web (Vue / uni-app)
 
 on:
-  push:
-    branches: [main, develop]
-    paths:
-      - 'apps/**'
-      - 'packages/**'
-      - 'pnpm-workspace.yaml'
-      - 'pnpm-lock.yaml'
-      - 'turbo.json'
-      - '.github/workflows/web.yml'
-  pull_request:
-    paths:
-      - 'apps/**'
-      - 'packages/**'
-      - 'pnpm-workspace.yaml'
-      - 'pnpm-lock.yaml'
-      - 'turbo.json'
-      - '.github/workflows/web.yml'
+  # 当前仅支持手动触发。GitHub 账号处于账单锁定状态，job 会在启动阶段即被拒绝
+  # （官方 annotation: "The job was not started because your account is locked
+  # due to a billing issue."），自动触发只会持续堆积失败记录。
+  # 质量门禁已收敛到本地：pnpm verify（前端）+ make verify（后端）+ make smoke。
+  # 账单问题解决后，若需恢复自动触发，取消下方注释即可。
+  workflow_dispatch:
+
+  # push:
+  #   branches: [main, develop]
+  #   paths:
+  #     - 'apps/**'
+  #     - 'packages/**'
+  #     - 'pnpm-workspace.yaml'
+  #     - 'pnpm-lock.yaml'
+  #     - 'turbo.json'
+  #     - '.github/workflows/web.yml'
+  # pull_request:
+  #   paths:
+  #     - 'apps/**'
+  #     - 'packages/**'
+  #     - 'pnpm-workspace.yaml'
+  #     - 'pnpm-lock.yaml'
+  #     - 'turbo.json'
+  #     - '.github/workflows/web.yml'
 
 jobs:
   build:

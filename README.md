@@ -3,7 +3,7 @@
 面向学术科研人群（研究生 / 高校教师 / 科研院所研究员）的知识付费与在线学习平台。
 核心业务形态：**学术课程 + 科研训练营 + 专家直播 + 学术社群**。
 
-> 当前进度：**Phase 1 — 工程骨架（Walking Skeleton）已交付**。
+> 当前进度：**Phase 1 — 工程骨架（Walking Skeleton）已交付，并完成端到端验证**。
 > 详见 `docs/开发计划与技术选型.html` 与 `docs/Phase1-验收报告.html`。
 
 ---
@@ -35,32 +35,37 @@
 │   └── config/                  @yanmai/config     ESLint / Prettier / TS 共享配置
 ├── infra/                       nginx 模板 / 数据库初始化 SQL / 部署说明
 ├── docs/                        产品功能文档 / UI 设计规范 / 开发计划 / 验收报告
-└── .github/workflows/           CI：api.yml（Go）/ web.yml（前端）
+└── .github/workflows/           CI 配置（api.yml / web.yml，当前仅手动触发）
 ```
 
 ## 二、环境要求
 
-| 组件       | 版本         | 本机实测                                         |
-| ---------- | ------------ | ------------------------------------------------ |
-| Go         | 1.26+        | 1.26.3 ⚠️ `windows/386`（32 位，建议升级 64 位） |
-| Node.js    | 20+          | 22.22.2 ✓                                        |
-| pnpm       | 9+           | 10.30.3 ✓                                        |
-| PostgreSQL | 16（云托管） | 云实例，本机无需安装 Docker                      |
+| 组件       | 版本          | 本机实测                                         |
+| ---------- | ------------- | ------------------------------------------------ |
+| Go         | 1.26+         | 1.26.3 ⚠️ `windows/386`（32 位，建议升级 64 位） |
+| Node.js    | 20+           | 22.22.2 ✓                                        |
+| pnpm       | 9+            | 10.30.3 ✓                                        |
+| PostgreSQL | 16+（云托管） | 已接入 Neon PostgreSQL 17.11（us-east-1）        |
 
 ## 三、快速开始
 
 ### 1. 准备数据库
 
-需要一个可访问的 PostgreSQL 实例（腾讯云 / Supabase 均可）。建库与账号参考 `infra/db-init.sql`。
+需要一个可访问的 PostgreSQL 实例（腾讯云 / Neon / Supabase 均可）。建库与账号参考 `infra/db-init.sql`。
 
 ```bash
 cd services/api
 cp .env.example .env.local
 # 编辑 .env.local，把 DATABASE_URL 换成你的真实连接串
-# 格式：postgres://用户:密码@主机:5432/yanmai_dev?sslmode=require
+# 格式：postgres://用户:密码@主机:5432/库名?sslmode=require
 ```
 
 > 未配置 `DATABASE_URL` 时服务会**明确报错退出**并列出缺失项，不会静默降级。
+
+> **跨地域云数据库注意**：若本机到数据库需经代理或跨洋访问，新建连接可能耗时数秒
+> （本项目实测 3.4~4.2s）。此时应放宽 `DB_PING_TIMEOUT`（默认 5s），否则 `/health`
+> 会误报降级；并设置 `DB_CONN_MAX_IDLE_TIME`（默认 4m），因为云数据库会主动断开
+> 空闲连接，而 Go 连接池默认不会淘汰空闲连接。
 
 ### 2. 启动后端
 
@@ -104,6 +109,7 @@ pnpm dev:h5       # uni-app H5
 
 ```bash
 # 根目录
+pnpm verify       # 一键门禁：lint + typecheck + test + build + 后端 lint + 后端测试
 pnpm build        # turbo 全量构建（含类型检查）
 pnpm lint         # 全量 ESLint
 pnpm test         # 全量单元测试
@@ -112,15 +118,17 @@ pnpm typecheck    # 全量类型检查
 # 后端
 pnpm api:run      # 启动 API
 pnpm api:test     # 测试 + 覆盖率
-pnpm api:lint     # go vet + gofmt 校验
+pnpm api:lint     # golangci-lint
+pnpm api:smoke    # 端到端冒烟（需服务已启动）
 cd services/api && make lint     # golangci-lint（v2 配置，安装见下）
+cd services/api && make smoke    # 端到端冒烟（可 BASE_URL=... 指定端口）
 cd services/api && make sdk      # 重新生成 OpenAPI 文档 + 前端契约类型
 cd services/api && make help     # 查看全部 Makefile 目标
 ```
 
 ### Go 静态检查（golangci-lint）
 
-CI 固定 `golangci-lint-action@v9` + golangci-lint `v2.14.0`，本地建议同版本以免「本地过、CI 挂」。
+本地与 workflow 均使用 golangci-lint `v2.14.0`，版本需一致以保证结果可复现。
 
 ```bash
 # Windows（本机为 windows/386 架构，需选对应产物）
@@ -148,7 +156,8 @@ brew install golangci-lint
 - **工程规范**：ESLint 9 Flat Config + Prettier + TypeScript strict；Go 侧 golangci-lint v2 + gofmt
 - **提交门禁**：Husky + lint-staged（暂存文件自动 ESLint 修复 / Prettier 格式化）+ commitlint
 - **契约驱动**：swaggo 注解 → OpenAPI → 前端契约类型自动生成；`contract.ts` 在编译期拦截不兼容变更
-- **CI**：Go 质量门禁（lint / vet / gofmt / test）+ **契约一致性校验** + **真实 PostgreSQL 的端到端冒烟**；前端 lint / typecheck / test / build
+- **质量门禁（本地）**：`pnpm verify` 一键跑通前端 lint / typecheck / test / build 与后端 golangci-lint / 测试；`services/api/scripts/smoke.sh` 覆盖 31 项端到端断言（登录 / 鉴权 / RBAC / 令牌刷新 / 错误处理）
+- **CI 配置**：`api.yml` / `web.yml` 已就绪（含契约一致性校验与真实数据库冒烟）。当前因 GitHub 账号账单锁定改为**仅手动触发**，不作为门禁，详见下节
 - **文档**：本 README、`services/api/README.md`、`infra/README.md`、`docs/Phase1-验收报告.html`
 
 后置到后续阶段：
@@ -166,5 +175,20 @@ brew install golangci-lint
 - **迁移**：纯 SQL、可回滚；本地启动自动执行，生产改由发布流程执行
 - **提交规范**：commitlint 强制 Conventional Commits（`feat` / `fix` / `docs` / `chore` …），标题用中文书写
 - **提交门禁**：`pre-commit` 对暂存文件自动跑 ESLint 修复 + Prettier 格式化；`commit-msg` 校验提交信息格式
-- **契约同步**：改动后端接口后执行 `cd services/api && make sdk`，并提交 `services/api/docs` 与 `packages/api-client/src/generated`，否则 CI 契约校验会失败
+- **契约同步**：改动后端接口后执行 `cd services/api && make sdk`，并提交 `services/api/docs` 与 `packages/api-client/src/generated`，否则契约一致性校验会失败
 - **代码风格**：Prettier 配置见 `.prettierrc.json`（引用 `@yanmai/config/prettier`）；生成物与 `docs/` 由 `.prettierignore` 排除
+
+## 七、CI 状态说明
+
+`.github/workflows/` 下的两个 workflow 内容完整（Go 质量门禁、契约一致性校验、真实 PostgreSQL 冒烟、前端 lint/test/typecheck/build），但**当前不支持自动触发**：
+
+GitHub 账号处于账单锁定状态，job 在启动阶段即被拒绝（官方 annotation：`The job was not started because your account is locked due to a billing issue.`），自动触发只会持续堆积失败记录。因此触发条件已收敛为 `workflow_dispatch`（仅手动）。
+
+质量门禁改由本地承担：
+
+```bash
+pnpm verify                                  # 前端 + 后端全量校验
+cd services/api && make smoke                # 端到端冒烟（需服务已启动）
+```
+
+账单问题解决后，取消 `.github/workflows/*.yml` 中 `on:` 段的注释即可恢复自动触发。
