@@ -18,7 +18,7 @@ defaults:
 jobs:
   quality:
     name: 静态检查与单元测试
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -50,7 +50,7 @@ jobs:
 
   smoke:
     name: 端到端冒烟（真实 PostgreSQL）
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: quality
 
     services:
