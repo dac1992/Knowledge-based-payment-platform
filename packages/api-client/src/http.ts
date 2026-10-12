@@ -23,7 +23,13 @@ export class ApiError extends Error {
   /** 原始响应体 */
   readonly payload?: unknown
 
-  constructor(params: { code: number; message: string; status?: number; traceId?: string; payload?: unknown }) {
+  constructor(params: {
+    code: number
+    message: string
+    status?: number
+    traceId?: string
+    payload?: unknown
+  }) {
     super(params.message)
     this.name = 'ApiError'
     this.code = params.code
@@ -123,7 +129,8 @@ export class ApiClient {
       this.options.onTokensRefreshed?.(tokens)
       return tokens.accessToken
     } catch (err) {
-      const apiErr = err instanceof ApiError ? err : new ApiError({ code: 10006, message: '令牌续期失败' })
+      const apiErr =
+        err instanceof ApiError ? err : new ApiError({ code: 10006, message: '令牌续期失败' })
       this.options.onUnauthorized?.(apiErr)
       throw apiErr
     }
@@ -214,7 +221,8 @@ export class ApiClient {
       if (refreshErr instanceof ApiError) throw refreshErr
       throw apiErr
     }
-  }}
+  }
+}
 
 /** 创建接口客户端。 */
 export function createApiClient(options: ApiClientOptions): ApiClient {

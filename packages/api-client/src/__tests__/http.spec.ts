@@ -69,10 +69,12 @@ function fail(code: number, message: string, status = 200): Scenario {
 }
 
 /** 读取请求头（AxiosHeaders 与普通对象都能取到）。 */
-function readHeader(config: InternalAxiosRequestConfig | undefined, name: string): string | undefined {
+function readHeader(
+  config: InternalAxiosRequestConfig | undefined,
+  name: string,
+): string | undefined {
   const headers = config?.headers as unknown as
-    | { get?: (key: string) => unknown; [key: string]: unknown }
-    | undefined
+    { get?: (key: string) => unknown; [key: string]: unknown } | undefined
   if (!headers) return undefined
 
   const viaGet = typeof headers.get === 'function' ? headers.get(name) : undefined
@@ -111,7 +113,10 @@ describe('ApiClient 响应信封拆解', () => {
   })
 
   it('data 为空时返回 null 而不是整个信封', async () => {
-    const { adapter } = createAdapter(() => ({ status: 200, body: { code: 0, message: 'ok', data: null } }))
+    const { adapter } = createAdapter(() => ({
+      status: 200,
+      body: { code: 0, message: 'ok', data: null },
+    }))
     const client = createApiClient({ baseURL: '/api/v1', adapter })
 
     await expect(client.user.me()).resolves.toBeNull()
@@ -253,7 +258,9 @@ describe('ApiClient 401 自动续期', () => {
   it('续期失败时回调 onUnauthorized 并抛出错误', async () => {
     const onUnauthorized = vi.fn()
     const { adapter } = createAdapter((config) =>
-      config.url === '/auth/refresh' ? fail(20006, '刷新令牌无效', 401) : fail(20007, '访问令牌已过期', 401),
+      config.url === '/auth/refresh'
+        ? fail(20006, '刷新令牌无效', 401)
+        : fail(20007, '访问令牌已过期', 401),
     )
 
     const client = createApiClient({
@@ -305,7 +312,9 @@ describe('ApiClient 网络层失败', () => {
 
   it('请求超时时给出可读提示', async () => {
     const adapter: AxiosAdapter = () =>
-      Promise.reject(Object.assign(new Error('timeout of 15000ms exceeded'), { code: 'ECONNABORTED' }))
+      Promise.reject(
+        Object.assign(new Error('timeout of 15000ms exceeded'), { code: 'ECONNABORTED' }),
+      )
 
     const client = createApiClient({ baseURL: '/api/v1', adapter })
 

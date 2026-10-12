@@ -86,7 +86,9 @@ async function handleLogout(): Promise<void> {
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item :icon="SwitchButton" @click="handleLogout">退出登录</el-dropdown-item>
+              <el-dropdown-item :icon="SwitchButton" @click="handleLogout"
+                >退出登录</el-dropdown-item
+              >
             </el-dropdown-menu>
           </template>
         </el-dropdown>

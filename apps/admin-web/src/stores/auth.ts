@@ -1,4 +1,11 @@
-import { ApiError, clearSession, getAccessToken, getProfile, saveProfile, saveSession } from '@yanmai/api-client'
+import {
+  ApiError,
+  clearSession,
+  getAccessToken,
+  getProfile,
+  saveProfile,
+  saveSession,
+} from '@yanmai/api-client'
 import type { LoginPayload, UserProfile } from '@yanmai/shared'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'

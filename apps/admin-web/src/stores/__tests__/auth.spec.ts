@@ -79,7 +79,9 @@ describe('useAuthStore', () => {
   })
 
   it('登录过程中的 loading 标记会被复位', async () => {
-    vi.mocked(api.auth.login).mockRejectedValue(new ApiError({ code: 0, message: '无法连接后端服务' }))
+    vi.mocked(api.auth.login).mockRejectedValue(
+      new ApiError({ code: 0, message: '无法连接后端服务' }),
+    )
     const store = useAuthStore()
 
     await store.login({ login: 'admin', password: 'x' })

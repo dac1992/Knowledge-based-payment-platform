@@ -69,12 +69,8 @@ func (h *Handler) UpdateMe(c *gin.Context) {
 	}
 
 	p := middleware.MustCurrentUser(c)
-	profile, err := h.svc.UpdateProfile(c.Request.Context(), p.UserID, UpdateInput{
-		Nickname: req.Nickname,
-		Avatar:   req.Avatar,
-		Email:    req.Email,
-		Phone:    req.Phone,
-	})
+	// UpdateProfileRequest 与 UpdateInput 字段一致，直接转换
+	profile, err := h.svc.UpdateProfile(c.Request.Context(), p.UserID, UpdateInput(req))
 	if err != nil {
 		httpx.Fail(c, err)
 		return
@@ -104,13 +100,7 @@ func (h *Handler) List(c *gin.Context) {
 		return
 	}
 
-	list, total, err := h.svc.List(c.Request.Context(), ListQuery{
-		Page:     req.Page,
-		PageSize: req.PageSize,
-		Keyword:  req.Keyword,
-		Role:     req.Role,
-		Status:   req.Status,
-	})
+	list, total, err := h.svc.List(c.Request.Context(), ListQuery(req))
 	if err != nil {
 		httpx.Fail(c, err)
 		return

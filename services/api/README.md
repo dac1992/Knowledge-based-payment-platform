@@ -47,30 +47,30 @@ services/api/
 
 ## 接口一览（Phase 1）
 
-| 方法 | 路径 | 说明 | 鉴权 |
-| --- | --- | --- | --- |
-| GET | `/health` | 综合健康检查（含数据库探测） | — |
-| GET | `/health/live` | 存活探针 | — |
-| GET | `/health/ready` | 就绪探针（数据库故障返回 503） | — |
-| GET | `/api/v1/meta/modules` | 已挂载模块清单 | — |
-| POST | `/api/v1/auth/register` | 注册 | — |
-| POST | `/api/v1/auth/login` | 登录 | — |
-| POST | `/api/v1/auth/refresh` | 刷新令牌 | — |
-| GET | `/api/v1/auth/me` | 当前登录账号 | Bearer |
-| POST | `/api/v1/auth/logout` | 登出（客户端丢弃令牌） | Bearer |
-| GET | `/api/v1/users/me` | 个人资料 | Bearer |
-| PATCH | `/api/v1/users/me` | 修改个人资料 | Bearer |
-| GET | `/api/v1/admin/users` | 用户列表（分页） | Bearer + admin |
-| GET | `/api/v1/admin/users/:id` | 用户详情 | Bearer + admin |
-| GET | `/api/v1/<module>` | 未交付模块占位，返回 501 | — |
+| 方法  | 路径                      | 说明                           | 鉴权           |
+| ----- | ------------------------- | ------------------------------ | -------------- |
+| GET   | `/health`                 | 综合健康检查（含数据库探测）   | —              |
+| GET   | `/health/live`            | 存活探针                       | —              |
+| GET   | `/health/ready`           | 就绪探针（数据库故障返回 503） | —              |
+| GET   | `/api/v1/meta/modules`    | 已挂载模块清单                 | —              |
+| POST  | `/api/v1/auth/register`   | 注册                           | —              |
+| POST  | `/api/v1/auth/login`      | 登录                           | —              |
+| POST  | `/api/v1/auth/refresh`    | 刷新令牌                       | —              |
+| GET   | `/api/v1/auth/me`         | 当前登录账号                   | Bearer         |
+| POST  | `/api/v1/auth/logout`     | 登出（客户端丢弃令牌）         | Bearer         |
+| GET   | `/api/v1/users/me`        | 个人资料                       | Bearer         |
+| PATCH | `/api/v1/users/me`        | 修改个人资料                   | Bearer         |
+| GET   | `/api/v1/admin/users`     | 用户列表（分页）               | Bearer + admin |
+| GET   | `/api/v1/admin/users/:id` | 用户详情                       | Bearer + admin |
+| GET   | `/api/v1/<module>`        | 未交付模块占位，返回 501       | —              |
 
 ## 种子账号（`DB_SEED=true` 时写入）
 
-| 登录名 | 密码 | 角色 |
-| --- | --- | --- |
-| admin | Admin@123456 | 管理员 |
-| lecturer | Lecturer@123456 | 讲师 |
-| student | Student@123456 | 学员 |
+| 登录名   | 密码            | 角色   |
+| -------- | --------------- | ------ |
+| admin    | Admin@123456    | 管理员 |
+| lecturer | Lecturer@123456 | 讲师   |
+| student  | Student@123456  | 学员   |
 
 ## 常用命令
 

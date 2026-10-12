@@ -79,7 +79,10 @@ onMounted(load)
 
 <template>
   <div class="users">
-    <YmPageHeader title="用户管理" description="平台账号列表，支持关键字、角色与状态筛选（仅管理员可见）">
+    <YmPageHeader
+      title="用户管理"
+      description="平台账号列表，支持关键字、角色与状态筛选（仅管理员可见）"
+    >
       <template #actions>
         <el-button :icon="Refresh" :loading="loading" @click="load">刷新</el-button>
       </template>
@@ -158,7 +161,9 @@ onMounted(load)
           <YmEmptyState
             size="sm"
             :title="errorText ? '数据加载失败' : '暂无用户数据'"
-            :description="errorText ? '请确认后端服务与数据库连接正常后重试。' : '可以尝试调整筛选条件。'"
+            :description="
+              errorText ? '请确认后端服务与数据库连接正常后重试。' : '可以尝试调整筛选条件。'
+            "
           />
         </template>
       </el-table>

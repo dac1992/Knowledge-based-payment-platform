@@ -14,9 +14,30 @@ withDefaults(
   <div class="ym-empty" :class="`is-${size}`">
     <div class="ym-empty__icon" aria-hidden="true">
       <svg viewBox="0 0 48 48" width="44" height="44">
-        <rect x="7" y="10" width="34" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="1.5" />
-        <path d="M7 28h10l3 4h8l3-4h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-        <path d="M17 18h14M17 23h9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        <rect
+          x="7"
+          y="10"
+          width="34"
+          height="24"
+          rx="3"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        />
+        <path
+          d="M7 28h10l3 4h8l3-4h10"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M17 18h14M17 23h9"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
       </svg>
     </div>
     <p class="ym-empty__title">{{ title }}</p>

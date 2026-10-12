@@ -53,7 +53,12 @@ async function submit(): Promise<void> {
         @submit.prevent="submit"
       >
         <el-form-item label="登录名 / 手机号" prop="login">
-          <el-input v-model="form.login" placeholder="请输入登录名或手机号" :prefix-icon="User" clearable />
+          <el-input
+            v-model="form.login"
+            placeholder="请输入登录名或手机号"
+            :prefix-icon="User"
+            clearable
+          />
         </el-form-item>
 
         <el-form-item label="密码" prop="password">
@@ -87,9 +92,7 @@ async function submit(): Promise<void> {
         </template>
       </el-alert>
 
-      <p class="login__hint">
-        联调账号：<code>lecturer / Lecturer@123456</code>
-      </p>
+      <p class="login__hint">联调账号：<code>lecturer / Lecturer@123456</code></p>
     </div>
   </div>
 </template>

@@ -1,0 +1,78 @@
+# golangci-lint v2 配置
+#
+# 运行：cd services/api && golangci-lint run ./...
+# CI：.github/workflows/api.yml 的 lint 步骤
+#
+# 设计取向 —— 只开启「能发现真实缺陷」的检查，关闭纯风格偏好类规则，
+# 避免为了过 lint 而写出更差的代码。风格统一交给 gofmt / goimports。
+version: '2'
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  # standard = errcheck, govet, ineffassign, staticcheck, unused
+  default: standard
+  enable:
+    - bodyclose # HTTP 响应体未关闭（连接泄漏）
+    - errorlint # err == / != 比较应改用 errors.Is / errors.As，包装应用 %w
+    - gocritic # 综合诊断：可疑逻辑、性能陷阱、可读性
+    - misspell # 常见英文拼写错误
+    - nilerr # 返回 nil 却带着非空 err，或反之
+    - unconvert # 多余的显式类型转换
+    - whitespace # 函数首尾与语句间的多余空行
+
+  settings:
+    errcheck:
+      # 断言失败会 panic，必须处理
+      check-type-assertions: true
+      # 显式忽略（_ = f()）视为有意为之，不报
+      check-blank: false
+
+    govet:
+      disable:
+        # 字段对齐优化会打乱可读性与字段分组，收益远小于维护成本
+        - fieldalignment
+
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+      disabled-checks:
+        # 与 gofmt 职责重叠
+        - sloppyLen
+
+    misspell:
+      locale: US
+
+  exclusions:
+    # 生成的代码不检查（swag 产物等）
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - std-error-handling
+    rules:
+      # 测试代码里允许不检查部分错误，也允许直接构造 HTTP 客户端
+      - path: _test\.go
+        linters:
+          - errcheck
+          - bodyclose
+          - gocritic
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      # 本模块的 import 单独成组，置于标准库与第三方之后
+      local-prefixes:
+        - github.com/yanmai/api
+  exclusions:
+    generated: lax
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

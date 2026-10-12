@@ -52,9 +52,7 @@ async function load(): Promise<void> {
     meta.value = m
   } catch (err) {
     errorText.value =
-      err instanceof ApiError
-        ? err.message
-        : '无法获取后端信息，请确认 API 服务已启动'
+      err instanceof ApiError ? err.message : '无法获取后端信息，请确认 API 服务已启动'
   } finally {
     loading.value = false
   }
@@ -133,19 +131,29 @@ onMounted(load)
           <h3 class="ym-section-title">服务健康</h3>
           <el-descriptions v-if="health" :column="1" size="small" border>
             <el-descriptions-item label="整体状态">
-              <el-tag :type="health.status === 'ok' ? 'success' : 'warning'" size="small" effect="light">
+              <el-tag
+                :type="health.status === 'ok' ? 'success' : 'warning'"
+                size="small"
+                effect="light"
+              >
                 {{ health.status === 'ok' ? '正常' : '降级' }}
               </el-tag>
             </el-descriptions-item>
             <el-descriptions-item label="数据库">
-              <el-tag :type="health.database.status === 'up' ? 'success' : 'danger'" size="small" effect="light">
+              <el-tag
+                :type="health.database.status === 'up' ? 'success' : 'danger'"
+                size="small"
+                effect="light"
+              >
                 {{ health.database.status === 'up' ? '已连通' : '不可用' }}
               </el-tag>
               <span class="dash__latency">探测耗时 {{ health.database.latency }}</span>
             </el-descriptions-item>
             <el-descriptions-item label="运行环境">{{ health.env }}</el-descriptions-item>
             <el-descriptions-item label="服务版本">v{{ health.version }}</el-descriptions-item>
-            <el-descriptions-item label="当前时间">{{ formatDateTime(health.time) }}</el-descriptions-item>
+            <el-descriptions-item label="当前时间">{{
+              formatDateTime(health.time)
+            }}</el-descriptions-item>
             <el-descriptions-item label="队列状态">
               <el-tag :type="meta?.queue ? 'success' : 'info'" size="small" effect="light">
                 {{ meta?.queue ? '已启用' : '未启用（缺 REDIS_ADDR）' }}
@@ -216,7 +224,9 @@ onMounted(load)
         </el-table-column>
       </el-table>
       <p class="dash__tip">
-        点击「探活」会请求 <code>/api/v1/&lt;模块&gt;</code>：已交付模块返回正常数据，待开发模块由后端统一返回 501 并说明计划阶段。
+        点击「探活」会请求
+        <code>/api/v1/&lt;模块&gt;</code>：已交付模块返回正常数据，待开发模块由后端统一返回 501
+        并说明计划阶段。
       </p>
     </div>
   </div>

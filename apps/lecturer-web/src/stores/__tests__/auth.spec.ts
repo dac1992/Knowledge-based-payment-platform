@@ -53,7 +53,9 @@ describe('useAuthStore（讲师端）', () => {
     vi.mocked(api.auth.login).mockResolvedValue(tokens)
     const store = useAuthStore()
 
-    await expect(store.login({ login: 'lecturer', password: 'Lecturer@123456' })).resolves.toBe(true)
+    await expect(store.login({ login: 'lecturer', password: 'Lecturer@123456' })).resolves.toBe(
+      true,
+    )
 
     expect(store.isAuthenticated).toBe(true)
     expect(store.isLecturer).toBe(true)
@@ -79,7 +81,9 @@ describe('useAuthStore（讲师端）', () => {
   })
 
   it('登录过程中的 loading 标记会被复位', async () => {
-    vi.mocked(api.auth.login).mockRejectedValue(new ApiError({ code: 0, message: '无法连接后端服务' }))
+    vi.mocked(api.auth.login).mockRejectedValue(
+      new ApiError({ code: 0, message: '无法连接后端服务' }),
+    )
     const store = useAuthStore()
 
     await store.login({ login: 'lecturer', password: 'x' })

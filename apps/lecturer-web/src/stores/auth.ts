@@ -1,4 +1,11 @@
-import { ApiError, clearSession, getAccessToken, getProfile, saveProfile, saveSession } from '@yanmai/api-client'
+import {
+  ApiError,
+  clearSession,
+  getAccessToken,
+  getProfile,
+  saveProfile,
+  saveSession,
+} from '@yanmai/api-client'
 import type { LoginPayload, UserProfile } from '@yanmai/shared'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -12,7 +19,9 @@ export const useAuthStore = defineStore('auth', () => {
   const error = ref('')
 
   const isAuthenticated = computed(() => Boolean(accessToken.value && profile.value))
-  const isLecturer = computed(() => profile.value?.role === 'lecturer' || profile.value?.role === 'admin')
+  const isLecturer = computed(
+    () => profile.value?.role === 'lecturer' || profile.value?.role === 'admin',
+  )
   const displayName = computed(() => profile.value?.nickname || profile.value?.username || '')
 
   function applySession(token: string, user: UserProfile): void {

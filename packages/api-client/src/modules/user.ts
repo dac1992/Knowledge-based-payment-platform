@@ -18,7 +18,11 @@ export class UserApi {
 
   /** 用户列表（需 admin 角色）。 */
   list(query: ListUsersQuery = {}): Promise<PageResult<UserProfile>> {
-    return this.client.request<PageResult<UserProfile>>({ url: '/admin/users', method: 'GET', params: query })
+    return this.client.request<PageResult<UserProfile>>({
+      url: '/admin/users',
+      method: 'GET',
+      params: query,
+    })
   }
 
   /** 用户详情（需 admin 角色）。 */

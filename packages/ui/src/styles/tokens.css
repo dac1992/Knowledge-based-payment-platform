@@ -42,6 +42,7 @@
   --ym-shadow: 0 4px 16px rgba(26, 31, 43, 0.08);
 
   /* 排版 */
-  --ym-font-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
+  --ym-font-sans:
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
   --ym-font-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
 }

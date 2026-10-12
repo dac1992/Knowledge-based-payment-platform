@@ -16,7 +16,9 @@ const healthText = ref('未连接')
 const healthOk = ref(false)
 const errorText = ref('')
 
-const lecturerModules = computed(() => MODULES.filter((m) => ['course', 'live', 'finance'].includes(m.key)))
+const lecturerModules = computed(() =>
+  MODULES.filter((m) => ['course', 'live', 'finance'].includes(m.key)),
+)
 const roleLabel = computed(() => {
   const r = auth.profile?.role
   return r ? ROLE_LABELS[r as UserRole] : '-'
@@ -43,7 +45,10 @@ onMounted(load)
 
 <template>
   <div class="ws">
-    <YmPageHeader title="我的工作台" description="Phase 1 骨架已打通登录态与接口调用，讲师业务能力将在 Phase 3 起逐步开放">
+    <YmPageHeader
+      title="我的工作台"
+      description="Phase 1 骨架已打通登录态与接口调用，讲师业务能力将在 Phase 3 起逐步开放"
+    >
       <template #actions>
         <el-button :icon="Refresh" :loading="loading" @click="load">刷新</el-button>
       </template>

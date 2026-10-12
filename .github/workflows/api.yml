@@ -5,10 +5,12 @@ on:
     branches: [main, develop]
     paths:
       - 'services/api/**'
+      - 'packages/api-client/src/generated/**'
       - '.github/workflows/api.yml'
   pull_request:
     paths:
       - 'services/api/**'
+      - 'packages/api-client/src/generated/**'
       - '.github/workflows/api.yml'
 
 defaults:
@@ -26,6 +28,13 @@ jobs:
         with:
           go-version: '1.26.x'
           cache-dependency-path: services/api/go.sum
+
+      # 版本与本地保持一致，避免「本地过、CI 挂」的偏差
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.14.0
+          working-directory: services/api
 
       - name: 下载依赖
         run: go mod download
@@ -47,6 +56,54 @@ jobs:
 
       - name: 单元测试与覆盖率
         run: go test ./... -cover -race
+
+  contract:
+    name: OpenAPI 契约校验
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.x'
+          cache-dependency-path: services/api/go.sum
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: 安装前端依赖
+        working-directory: .
+        run: pnpm install --frozen-lockfile
+
+      # 从源码重新生成 swagger 文档与前端契约类型。
+      # swag 版本必须与 services/api/Makefile 的 SWAG_VERSION 一致，
+      # 否则生成结果出现无意义差异会导致本任务误报。
+      - name: 重新生成契约产物
+        working-directory: .
+        run: |
+          cd services/api
+          go run github.com/swaggo/swag/cmd/swag@v1.16.6 init \
+            -g cmd/server/main.go -o docs \
+            --parseDependency --parseInternal --outputTypes json,yaml
+          cd ../..
+          pnpm --filter @yanmai/api-client gen:openapi
+
+      # 后端改了接口但没同步前端类型 → 这里会红，强制开发者补上产物。
+      - name: 校验契约产物已随代码提交
+        working-directory: .
+        run: |
+          if ! git diff --quiet -- services/api/docs packages/api-client/src/generated; then
+            echo "::error::OpenAPI 文档或前端契约类型与源码不一致。请本地执行 'cd services/api && make sdk'，并把生成产物一并提交。"
+            git --no-pager diff --stat -- services/api/docs packages/api-client/src/generated
+            exit 1
+          fi
+          echo "✓ 契约产物与源码一致"
 
   smoke:
     name: 端到端冒烟（真实 PostgreSQL）

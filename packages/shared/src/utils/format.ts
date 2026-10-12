@@ -41,7 +41,10 @@ export function maskPhone(phone: string | null | undefined): string {
 }
 
 /** 相对时间：刚刚 / N 分钟前 / N 小时前 / N 天前 / 具体日期。 */
-export function relativeTime(input: string | number | Date | null | undefined, now = Date.now()): string {
+export function relativeTime(
+  input: string | number | Date | null | undefined,
+  now = Date.now(),
+): string {
   const d = toDate(input)
   if (!d) return '-'
 

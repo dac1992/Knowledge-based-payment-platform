@@ -62,7 +62,8 @@ onMounted(load)
       <view v-else-if="errorText" class="home__error">
         <text class="home__error-title">{{ errorText }}</text>
         <text class="home__error-tip">
-          请确认 API 服务已启动（cd services/api &amp;&amp; make run），并已配置云 PostgreSQL 连接串。
+          请确认 API 服务已启动（cd services/api &amp;&amp; make run），并已配置云 PostgreSQL
+          连接串。
         </text>
       </view>
 
@@ -95,7 +96,9 @@ onMounted(load)
             :style="{ width: `${Math.round((DELIVERED_MODULE_COUNT / totalModules) * 100)}%` }"
           />
         </view>
-        <text class="ym-sub">{{ DELIVERED_MODULE_COUNT }} / {{ totalModules }} 个业务模块已交付</text>
+        <text class="ym-sub"
+          >{{ DELIVERED_MODULE_COUNT }} / {{ totalModules }} 个业务模块已交付</text
+        >
       </view>
     </view>
 

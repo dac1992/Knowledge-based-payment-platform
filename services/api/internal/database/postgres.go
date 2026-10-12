@@ -22,7 +22,7 @@ func New(cfg *config.Config, log *zap.Logger) (*gorm.DB, error) {
 		Logger:                 newGormLogger(log, cfg),
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
-		NowFunc:                func() time.Time { return time.Now() },
+		NowFunc:                time.Now,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("连接 PostgreSQL 失败（%s）: %w", cfg.Database.SafeDSN(), err)

@@ -69,7 +69,10 @@ function useSeed(login: string, password: string): void {
         </li>
         <li>
           <el-icon><CircleCheck /></el-icon>
-          <span>Phase 1 骨架已交付，当前进度 {{ DELIVERED_MODULE_COUNT }} / {{ totalModules }} 个业务模块</span>
+          <span
+            >Phase 1 骨架已交付，当前进度 {{ DELIVERED_MODULE_COUNT }} /
+            {{ totalModules }} 个业务模块</span
+          >
         </li>
         <li>
           <el-icon><CircleCheck /></el-icon>
@@ -94,7 +97,12 @@ function useSeed(login: string, password: string): void {
           @submit.prevent="submit"
         >
           <el-form-item label="登录名 / 手机号" prop="login">
-            <el-input v-model="form.login" placeholder="请输入登录名或手机号" :prefix-icon="User" clearable />
+            <el-input
+              v-model="form.login"
+              placeholder="请输入登录名或手机号"
+              :prefix-icon="User"
+              clearable
+            />
           </el-form-item>
 
           <el-form-item label="密码" prop="password">
@@ -108,12 +116,7 @@ function useSeed(login: string, password: string): void {
             />
           </el-form-item>
 
-          <el-button
-            type="primary"
-            class="login__submit"
-            :loading="auth.loading"
-            @click="submit"
-          >
+          <el-button type="primary" class="login__submit" :loading="auth.loading" @click="submit">
             登录
             <el-icon class="login__submit-icon"><ArrowRight /></el-icon>
           </el-button>

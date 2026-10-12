@@ -1,4 +1,12 @@
-import { STORAGE_KEYS, storage, type ApiResponse, type AuthTokens, type HealthStatus, type ModuleMeta, type UserProfile } from '@yanmai/shared'
+import {
+  STORAGE_KEYS,
+  storage,
+  type ApiResponse,
+  type AuthTokens,
+  type HealthStatus,
+  type ModuleMeta,
+  type UserProfile,
+} from '@yanmai/shared'
 
 /**
  * uni-app 请求封装。
@@ -70,7 +78,13 @@ export function request<T>(options: RequestOptions): Promise<T> {
           return
         }
         if (body.code !== 0) {
-          reject(new UniApiError({ code: body.code, message: body.message || '请求失败', traceId: body.traceId }))
+          reject(
+            new UniApiError({
+              code: body.code,
+              message: body.message || '请求失败',
+              traceId: body.traceId,
+            }),
+          )
           return
         }
         resolve(body.data as T)

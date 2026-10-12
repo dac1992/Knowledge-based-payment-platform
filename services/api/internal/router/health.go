@@ -59,20 +59,22 @@ func buildHealth(cfg *config.Config, db *gorm.DB) gin.H {
 		overall = "degraded"
 	}
 
-	body := gin.H{
-		"status":  overall,
-		"service": cfg.App.Name,
-		"env":     cfg.App.Env,
-		"version": config.Version,
-		"time":    time.Now().Format(time.RFC3339),
-		"uptime":  time.Since(start).String(),
-		"database": gin.H{
-			"status":  dbStatus,
-			"latency": time.Since(start).String(),
-		},
+	// 先组装 database 子对象，避免对其做类型断言后再写入
+	dbInfo := gin.H{
+		"status":  dbStatus,
+		"latency": time.Since(start).String(),
 	}
 	if dbError != "" {
-		body["database"].(gin.H)["error"] = dbError
+		dbInfo["error"] = dbError
 	}
-	return body
+
+	return gin.H{
+		"status":   overall,
+		"service":  cfg.App.Name,
+		"env":      cfg.App.Env,
+		"version":  config.Version,
+		"time":     time.Now().Format(time.RFC3339),
+		"uptime":   time.Since(start).String(),
+		"database": dbInfo,
+	}
 }

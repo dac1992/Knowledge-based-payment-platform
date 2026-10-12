@@ -1,0 +1,16 @@
+# ---------- 自动生成，勿格式化（重新生成会覆盖，且体积大） ----------
+services/api/docs/swagger.json
+services/api/docs/swagger.yaml
+packages/api-client/src/generated/
+pnpm-lock.yaml
+
+# ---------- 手工排版的 HTML 交付物 ----------
+# docs/ 下是精心排版的多页长文档，格式化会打乱既有版式
+docs/
+
+# ---------- 依赖与构建产物 ----------
+node_modules/
+dist/
+unpackage/
+.turbo/
+coverage/

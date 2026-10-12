@@ -40,12 +40,12 @@
 
 ## 二、环境要求
 
-| 组件 | 版本 | 本机实测 |
-| --- | --- | --- |
-| Go | 1.26+ | 1.26.3 ⚠️ `windows/386`（32 位，建议升级 64 位） |
-| Node.js | 20+ | 22.22.2 ✓ |
-| pnpm | 9+ | 10.30.3 ✓ |
-| PostgreSQL | 16（云托管） | 云实例，本机无需安装 Docker |
+| 组件       | 版本         | 本机实测                                         |
+| ---------- | ------------ | ------------------------------------------------ |
+| Go         | 1.26+        | 1.26.3 ⚠️ `windows/386`（32 位，建议升级 64 位） |
+| Node.js    | 20+          | 22.22.2 ✓                                        |
+| pnpm       | 9+           | 10.30.3 ✓                                        |
+| PostgreSQL | 16（云托管） | 云实例，本机无需安装 Docker                      |
 
 ## 三、快速开始
 
@@ -92,11 +92,11 @@ pnpm dev:h5       # uni-app H5
 
 ### 4. 种子账号（`DB_SEED=true` 时写入）
 
-| 登录名 | 密码 | 角色 |
-| --- | --- | --- |
-| admin | `Admin@123456` | 平台管理员 |
-| lecturer | `Lecturer@123456` | 讲师 |
-| student | `Student@123456` | 学员 |
+| 登录名   | 密码              | 角色       |
+| -------- | ----------------- | ---------- |
+| admin    | `Admin@123456`    | 平台管理员 |
+| lecturer | `Lecturer@123456` | 讲师       |
+| student  | `Student@123456`  | 学员       |
 
 > 仅用于本地联调。生产环境必须保持 `DB_SEED=false`。
 
@@ -113,8 +113,25 @@ pnpm typecheck    # 全量类型检查
 pnpm api:run      # 启动 API
 pnpm api:test     # 测试 + 覆盖率
 pnpm api:lint     # go vet + gofmt 校验
+cd services/api && make lint     # golangci-lint（v2 配置，安装见下）
+cd services/api && make sdk      # 重新生成 OpenAPI 文档 + 前端契约类型
 cd services/api && make help     # 查看全部 Makefile 目标
 ```
+
+### Go 静态检查（golangci-lint）
+
+CI 固定 `golangci-lint-action@v9` + golangci-lint `v2.14.0`，本地建议同版本以免「本地过、CI 挂」。
+
+```bash
+# Windows（本机为 windows/386 架构，需选对应产物）
+curl -L -o gcl.zip https://github.com/golangci/golangci-lint/releases/download/v2.14.0/golangci-lint-2.14.0-windows-386.zip
+unzip gcl.zip && cp golangci-lint-2.14.0-windows-386/golangci-lint.exe "$(go env GOPATH)/bin/"
+
+# macOS / Linux
+brew install golangci-lint
+```
+
+未加入 `PATH` 时可显式指定：`make lint GOLANGCI="$(go env GOPATH)/bin/golangci-lint"`
 
 ## 五、Phase 1 交付范围
 
@@ -128,16 +145,18 @@ cd services/api && make help     # 查看全部 Makefile 目标
 - **讲师工作台**：登录页 → 工作台（品牌色区分，与后台共享组件）
 - **uni-app**：可编译微信小程序与 H5，含首页与课程占位页
 - **共享包**：`@yanmai/ui` / `@yanmai/api-client` / `@yanmai/shared` / `@yanmai/config`
-- **工程规范**：ESLint 9 Flat Config + Prettier + TypeScript strict
-- **CI**：Go 质量门禁 + **真实 PostgreSQL 的端到端冒烟**；前端 lint / test / build
+- **工程规范**：ESLint 9 Flat Config + Prettier + TypeScript strict；Go 侧 golangci-lint v2 + gofmt
+- **提交门禁**：Husky + lint-staged（暂存文件自动 ESLint 修复 / Prettier 格式化）+ commitlint
+- **契约驱动**：swaggo 注解 → OpenAPI → 前端契约类型自动生成；`contract.ts` 在编译期拦截不兼容变更
+- **CI**：Go 质量门禁（lint / vet / gofmt / test）+ **契约一致性校验** + **真实 PostgreSQL 的端到端冒烟**；前端 lint / typecheck / test / build
 - **文档**：本 README、`services/api/README.md`、`infra/README.md`、`docs/Phase1-验收报告.html`
 
 后置到后续阶段：
 
 - 微信登录 / 短信验证码登录、RBAC 细粒度权限点、令牌黑名单（Phase 2）
-- swaggo 注解 → OpenAPI → 前端 SDK 自动生成（当前 SDK 为手写，路径与后端一一对应）
+- 请求方法仍为手写封装，仅**类型**由 OpenAPI 生成；接口规模上来后可切换为完全生成
 - Meilisearch 搜索、asynq 任务消费者（当前仅生产者侧，缺 `REDIS_ADDR` 时自动禁用）
-- Husky + commitlint（需先 `git init` 后 `pnpm install` 才会激活）
+- Playwright E2E
 
 ## 六、工程约定
 
@@ -145,4 +164,7 @@ cd services/api && make help     # 查看全部 Makefile 目标
 - **统一响应**：`{ code, message, data, traceId }`；业务错误码集中在 `pkg/errs`，HTTP 状态映射集中在 `pkg/httpx`
 - **配置**：所有密钥只放环境变量（`.env.local`，已 gitignore）；日志中连接串自动脱敏
 - **迁移**：纯 SQL、可回滚；本地启动自动执行，生产改由发布流程执行
-- **提交规范**：建议使用 Conventional Commits
+- **提交规范**：commitlint 强制 Conventional Commits（`feat` / `fix` / `docs` / `chore` …），标题用中文书写
+- **提交门禁**：`pre-commit` 对暂存文件自动跑 ESLint 修复 + Prettier 格式化；`commit-msg` 校验提交信息格式
+- **契约同步**：改动后端接口后执行 `cd services/api && make sdk`，并提交 `services/api/docs` 与 `packages/api-client/src/generated`，否则 CI 契约校验会失败
+- **代码风格**：Prettier 配置见 `.prettierrc.json`（引用 `@yanmai/config/prettier`）；生成物与 `docs/` 由 `.prettierignore` 排除

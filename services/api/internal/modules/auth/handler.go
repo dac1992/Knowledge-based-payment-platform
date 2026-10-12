@@ -31,13 +31,9 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	result, err := h.svc.Register(c.Request.Context(), RegisterInput{
-		Username: req.Username,
-		Password: req.Password,
-		Phone:    req.Phone,
-		Email:    req.Email,
-		Nickname: req.Nickname,
-	})
+	// RegisterRequest 与 RegisterInput 字段一致，直接转换而非逐字段复制，
+	// 避免新增字段时漏改（漏改会被编译器拦下）。
+	result, err := h.svc.Register(c.Request.Context(), RegisterInput(req))
 	if err != nil {
 		httpx.Fail(c, err)
 		return
@@ -64,10 +60,7 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	result, err := h.svc.Login(c.Request.Context(), LoginInput{
-		Login:    req.Login,
-		Password: req.Password,
-	})
+	result, err := h.svc.Login(c.Request.Context(), LoginInput(req))
 	if err != nil {
 		httpx.Fail(c, err)
 		return

@@ -2,11 +2,13 @@
  * @yanmai/api-client —— 类型安全的接口 SDK。
  *
  * ## 契约来源
- * 后端通过 swaggo 注解产出 OpenAPI 3 文档（services/api/docs/swagger.json），
- * 再由 `pnpm --filter @yanmai/api-client gen:openapi` 生成 TS 类型。
+ * 后端 swaggo 注解 → `services/api/docs/swagger.json`（Swagger 2.0）
+ * → swagger2openapi 转 OpenAPI 3.0 → openapi-typescript 生成 `src/generated/schema.d.ts`。
+ * 一条命令完成：`cd services/api && make sdk`。
  *
- * Phase 1 的接口集很小且稳定，SDK 采用手写封装（路径与后端路由一一对应），
- * 同时保留 OpenAPI 生成脚本；Phase 2 接口规模上来后切换为「注解 → 生成」流程。
+ * 请求封装仍为手写（路径与后端路由一一对应，便于加拦截与类型推断），
+ * 但 `src/contract.ts` 会用生成的契约对 `@yanmai/shared` 的类型做编译期断言：
+ * 后端一旦删除或改名字段，前端在 `pnpm typecheck` 阶段即报错。
  *
  * ## 使用方式
  * Web / 桌面端（localStorage 可用）：
@@ -35,3 +37,6 @@ export type { CreateWebApiClientOptions } from './web'
 export { AuthApi } from './modules/auth'
 export { UserApi } from './modules/user'
 export { SystemApi } from './modules/system'
+
+// 契约类型与一致性断言（断言在 typecheck 时生效，见 contract.ts）
+export type * from './contract'

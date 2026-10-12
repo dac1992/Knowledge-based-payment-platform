@@ -42,8 +42,8 @@ const courseModule = MODULES.find((m) => m.key === 'course')
     <view class="ym-card">
       <text class="ym-title">当前状态</text>
       <text class="ym-sub">
-        Phase 1 仅交付工程骨架：登录态、路由、请求封装已打通。课程数据模型将在
-        Phase 3 随数据库迁移一并落地。
+        Phase 1 仅交付工程骨架：登录态、路由、请求封装已打通。课程数据模型将在 Phase 3
+        随数据库迁移一并落地。
       </text>
     </view>
   </view>
