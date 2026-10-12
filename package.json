@@ -23,8 +23,10 @@
     "api:run": "cd services/api && go run ./cmd/server",
     "api:build": "cd services/api && go build ./...",
     "api:test": "cd services/api && go test ./... -cover",
-    "api:lint": "cd services/api && go vet ./... && gofmt -l .",
-    "api:tidy": "cd services/api && go mod tidy"
+    "api:lint": "cd services/api && node scripts/lint.mjs",
+    "api:smoke": "cd services/api && bash scripts/smoke.sh",
+    "api:tidy": "cd services/api && go mod tidy",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm api:lint && pnpm api:test"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",

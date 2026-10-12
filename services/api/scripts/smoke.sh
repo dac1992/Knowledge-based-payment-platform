@@ -8,6 +8,12 @@
 #
 set -uo pipefail
 
+# 响应断言依赖 python3 解析 JSON，缺失时直接给出明确提示而不是逐条静默失败
+if ! command -v python3 >/dev/null 2>&1; then
+  printf '\033[31m冒烟测试需要 python3 解析 JSON 响应，请先安装 python3。\033[0m\n' >&2
+  exit 2
+fi
+
 BASE="${BASE_URL:-http://127.0.0.1:8080}"
 API="$BASE/api/v1"
 ADMIN_LOGIN="${SMOKE_ADMIN_LOGIN:-admin}"
@@ -25,7 +31,17 @@ ng() { printf '  \033[31m✗\033[0m %s\n' "$1"; fail=$((fail + 1)); }
 section() { printf '\n\033[1m==> %s\033[0m\n' "$1"; }
 
 # jget <json> <python 表达式>
-jget() { python3 -c "import json,sys;d=json.load(sys.stdin);print(eval('d$2'))" 2>/dev/null <<<"$1"; }
+#
+# 表达式经环境变量传入，而不是直接拼进 Python 源码：调用方传 "['code']" 时，
+# 拼接会生成 eval('d['code']') 这种引号嵌套的非法语法，解析会静默失败。
+# 显式按 UTF-8 解码 stdin，避免在非 UTF-8 locale（如 Windows 默认）下解析失败。
+jget() {
+  JGET_EXPR="$2" python3 -c '
+import json, os, sys
+d = json.loads(sys.stdin.buffer.read().decode("utf-8"))
+print(eval("d" + os.environ["JGET_EXPR"]))
+' <<<"$1"
+}
 
 expect() { # expect <实际> <期望> <说明>
   if [ "$1" = "$2" ]; then ok "$3"; else ng "$3（期望 $2，实际 ${1:-空}）"; fi

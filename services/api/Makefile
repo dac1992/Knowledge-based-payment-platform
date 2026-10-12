@@ -3,9 +3,9 @@
 APP      := yanmai-api
 BIN_DIR  := bin
 GO       := go
-# golangci-lint 可执行文件。若未加入 PATH，可覆盖：
-#   make lint GOLANGCI="$(go env GOPATH)/bin/golangci-lint"
-GOLANGCI ?= golangci-lint
+# golangci-lint 可执行文件。留空则自动探测（PATH → $(go env GOPATH)/bin），
+# 需要显式指定时：make lint GOLANGCI=/path/to/golangci-lint
+GOLANGCI ?=
 # 固定 swag 版本：契约校验依赖生成结果逐字节稳定，本地与 CI 必须一致
 SWAG_VERSION ?= v1.16.6
 
@@ -23,8 +23,22 @@ build: ## 编译并输出到 bin/
 test: ## 运行全部测试并输出覆盖率
 	$(GO) test ./... -cover
 
-lint: ## 静态检查（golangci-lint，含 gofmt / goimports 格式器）
-	$(GOLANGCI) run ./...
+lint: ## 静态检查（golangci-lint；未加入 PATH 时自动回落到 $(go env GOPATH)/bin）
+	@GCL="$(GOLANGCI)"; \
+	if [ -z "$$GCL" ]; then \
+		if command -v golangci-lint >/dev/null 2>&1; then GCL=golangci-lint; \
+		else \
+			for cand in "$$(go env GOPATH)/bin/golangci-lint" "$$(go env GOPATH)/bin/golangci-lint.exe"; do \
+				if [ -x "$$cand" ]; then GCL="$$cand"; break; fi; \
+			done; \
+		fi; \
+	fi; \
+	if [ -z "$$GCL" ]; then \
+		echo "未找到 golangci-lint。请安装，或用 make lint GOLANGCI=/path/to/golangci-lint 指定。" >&2; \
+		exit 1; \
+	fi; \
+	echo "使用 $$GCL"; \
+	exec "$$GCL" run ./...
 
 fmt: ## 自动格式化
 	$(GO) fmt ./...
