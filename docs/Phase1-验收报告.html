@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研脉学术知识付费平台 · Phase 1 交付与验收报告</title>
+<style>
+  :root{
+    --primary:#1A56DB; --primary-dark:#0E3A99; --primary-light:#EBF1FE;
+    --accent:#C9A227; --accent-light:#FBF4DF;
+    --ink:#1A1F2B; --ink-2:#3D4759; --ink-3:#6B7688; --ink-4:#98A2B3;
+    --line:#E4E8EF; --line-2:#EEF1F6; --bg:#F4F6FA; --card:#FFFFFF;
+    --ok:#16A34A; --ok-bg:#E9F8EF; --warn:#D97706; --warn-bg:#FEF5E7;
+    --err:#DC2626; --err-bg:#FDECEC; --info:#2563EB; --info-bg:#EBF1FE;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.78;font-size:15px;-webkit-font-smoothing:antialiased;}
+  .layout{display:flex;max-width:1440px;margin:0 auto;align-items:flex-start;}
+  .sidebar{width:290px;flex:none;position:sticky;top:0;height:100vh;overflow-y:auto;
+    padding:28px 20px 60px;background:#0F1A2E;color:#C7D2E4;}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:15px;background:linear-gradient(135deg,#2E6BFF,#1A56DB);}
+  .brand b{color:#fff;font-size:15px;display:block;}
+  .brand span{font-size:11px;color:#7C8CAA;}
+  .doc-title{font-size:12px;color:#8C9BB8;margin:16px 0 14px;padding-top:14px;border-top:1px solid #22304A;}
+  .sidebar nav a{display:block;padding:7px 12px;font-size:13.5px;color:#AEBBD0;text-decoration:none;
+    border-radius:7px;margin-bottom:2px;border-left:2px solid transparent;transition:.16s;}
+  .sidebar nav a:hover{background:#1A2942;color:#fff;}
+  .sidebar nav a.l2{padding-left:24px;font-size:12.5px;color:#8E9DB8;}
+  .sidebar nav a.active{background:#1A2942;color:#fff;border-left-color:var(--accent);}
+  .main{flex:1;min-width:0;padding:40px 48px 100px;}
+  .doc{max-width:1010px;}
+  header.cover{background:linear-gradient(135deg,#0A2A6B 0%,#1A56DB 58%,#2E6BFF 100%);color:#fff;
+    border-radius:16px;padding:44px;position:relative;overflow:hidden;box-shadow:0 18px 40px -18px rgba(26,86,219,.55);}
+  header.cover::after{content:"";position:absolute;right:-50px;top:-60px;width:280px;height:280px;
+    background:radial-gradient(circle,rgba(201,162,39,.32),transparent 68%);border-radius:50%;}
+  header.cover .eyebrow{font-size:12.5px;letter-spacing:3px;color:#BBD0FF;font-weight:600;}
+  header.cover h1{font-size:31px;line-height:1.3;margin:12px 0 8px;font-weight:800;}
+  header.cover .sub{font-size:15px;color:#D6E2FF;max-width:660px;}
+  header.cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
+  header.cover .meta span{font-size:12.5px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    padding:5px 13px;border-radius:20px;}
+  h2.sec{font-size:23px;margin:54px 0 20px;padding-left:16px;position:relative;font-weight:800;}
+  h2.sec::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px;border-radius:3px;
+    background:linear-gradient(180deg,var(--primary),var(--accent));}
+  h2.sec .num{color:var(--primary);font-size:15px;font-weight:700;margin-right:8px;opacity:.7;}
+  h3.sub{font-size:17.5px;margin:32px 0 12px;font-weight:700;padding-bottom:7px;border-bottom:1px solid var(--line-2);}
+  h3.sub .dot{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--primary);margin-right:9px;
+    transform:rotate(45deg) translateY(-1px);}
+  h4{font-size:15px;margin:20px 0 8px;font-weight:700;color:var(--primary-dark);}
+  p{margin:10px 0;color:var(--ink-2);}
+  ul,ol{margin:10px 0 10px 4px;padding-left:22px;color:var(--ink-2);}
+  li{margin:5px 0;} li::marker{color:var(--primary);}
+  strong{color:var(--ink);font-weight:700;}
+  code{background:#EEF1F6;color:#0E3A99;padding:1px 6px;border-radius:5px;font-size:13px;
+    font-family:"JetBrains Mono",Consolas,Monaco,monospace;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;background:#fff;border-radius:var(--radius);
+    overflow:hidden;box-shadow:0 1px 2px rgba(16,30,54,.06),0 0 0 1px var(--line);}
+  th{background:#F2F5FB;text-align:left;padding:11px 14px;font-weight:700;font-size:13px;border-bottom:1px solid var(--line);}
+  td{padding:10px 14px;border-bottom:1px solid var(--line-2);color:var(--ink-2);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#FAFBFE;}
+  tbody tr:hover{background:#F4F8FF;}
+  .td-pri{font-weight:700;color:var(--ink);white-space:nowrap;}
+  .callout{border-radius:var(--radius);padding:14px 18px;margin:16px 0;font-size:13.8px;border-left:4px solid var(--primary);
+    background:var(--info-bg);color:var(--ink-2);}
+  .callout.tip{border-color:var(--ok);background:var(--ok-bg);}
+  .callout.warn{border-color:var(--warn);background:var(--warn-bg);}
+  .callout.err{border-color:var(--err);background:var(--err-bg);}
+  .callout .ct{display:block;font-weight:800;color:var(--ink);margin-bottom:3px;font-size:13.5px;}
+  .tag{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:20px;font-weight:600;line-height:1.6;}
+  .tag.core{background:#E9F8EF;color:#15803D;}
+  .tag.rec{background:var(--accent-light);color:#8A6D12;}
+  .tag.alt{background:#EEF1F6;color:#4B5563;}
+  .tag.later{background:#FEF5E7;color:#B45309;}
+  .tag.err{background:#FDECEC;color:#B91C1C;}
+  .grid{display:grid;gap:14px;margin:18px 0;}
+  .grid.g2{grid-template-columns:repeat(2,1fr);}
+  .grid.g3{grid-template-columns:repeat(3,1fr);}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;
+    box-shadow:0 1px 2px rgba(16,30,54,.05);}
+  .card h5{font-size:14.5px;margin-bottom:6px;color:var(--ink);display:flex;align-items:center;gap:8px;}
+  .card h5 .ic{width:26px;height:26px;border-radius:7px;background:var(--primary-light);color:var(--primary);
+    display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;font-weight:800;}
+  .card p{font-size:13.2px;margin:4px 0;color:var(--ink-3);}
+  pre.tree{background:#0F1A2E;color:#C7D2E4;border-radius:var(--radius);padding:20px 22px;overflow-x:auto;
+    font-size:12.8px;line-height:1.75;font-family:"JetBrains Mono",Consolas,monospace;margin:16px 0;}
+  pre.tree .c1{color:#7DD3FC;} pre.tree .c2{color:#FDE68A;} pre.tree .c3{color:#86EFAC;} pre.tree .cm{color:#64748B;}
+  .check{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;margin:16px 0;
+    box-shadow:0 1px 2px rgba(16,30,54,.05);}
+  .check li{list-style:none;position:relative;padding-left:26px;margin:9px 0;font-size:13.6px;color:var(--ink-2);}
+  .check li::before{content:"";position:absolute;left:0;top:5px;width:15px;height:15px;border-radius:4px;
+    border:2px solid var(--primary);}
+  .check li.done::before{background:var(--ok);border-color:var(--ok);
+    content:"✓";color:#fff;font-size:11px;line-height:15px;text-align:center;font-weight:800;}
+  .check li.todo::before{background:var(--warn);border-color:var(--warn);
+    content:"!";color:#fff;font-size:11px;line-height:15px;text-align:center;font-weight:800;}
+  .env{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0;}
+  .env div{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(16,30,54,.06),0 0 0 1px var(--line);font-size:12.5px;color:var(--ink-3);}
+  .env b{display:block;color:var(--ink);font-size:13.5px;margin-bottom:3px;}
+  .env .yes{color:var(--ok);font-weight:700;} .env .no{color:var(--err);font-weight:700;}
+  footer{margin-top:70px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-4);font-size:12.5px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));z-index:99;width:0;}
+  .stat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0;}
+  .stat .s{background:#fff;border-radius:var(--radius);padding:18px;box-shadow:0 1px 2px rgba(16,30,54,.06),0 0 0 1px var(--line);}
+  .stat .s .n{font-size:26px;font-weight:800;color:var(--primary);line-height:1.2;}
+  .stat .s .n small{font-size:13px;font-weight:600;color:var(--ink-3);}
+  .stat .s .l{font-size:12.5px;color:var(--ink-3);margin-top:4px;}
+  .stat .s.good .n{color:var(--ok);} .stat .s.bad .n{color:var(--err);} .stat .s.warn .n{color:var(--warn);}
+  @media (max-width:1080px){.sidebar{display:none;}.main{padding:28px 20px 80px;}
+    .grid.g3,.grid.g2,.env,.stat{grid-template-columns:1fr 1fr;} header.cover{padding:32px 24px;} header.cover h1{font-size:24px;}}
+  @media (max-width:640px){.stat{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">研</div>
+      <div><b>研脉学术</b><span>知识付费平台</span></div>
+    </div>
+    <div class="doc-title">Phase 1 交付与验收报告</div>
+    <nav id="toc">
+      <a href="#s1">01 · 验收标准对照</a>
+      <a href="#s2">02 · 交付清单</a>
+      <a href="#s3">03 · 验证证据</a>
+      <a href="#s4">04 · 工程门禁</a>
+      <a href="#s5">05 · 环境实测</a>
+      <a href="#s6">06 · 遗留与阻塞</a>
+      <a href="#s7">07 · 下一步</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+  <div class="doc">
+
+    <header class="cover">
+      <div class="eyebrow">研 脉 学 术 知 识 付 费 平 台</div>
+      <h1>Phase 1 · 工程骨架交付与验收报告</h1>
+      <p class="sub">Walking Skeleton 交付清单、逐项验证证据与遗留阻塞。四条验收标准中 2 条已达成、1 条部分达成、1 条受外部账号问题阻塞。</p>
+      <div class="meta">
+        <span>报告日期 2026-10-12</span>
+        <span>阶段 Phase 1（Walking Skeleton）</span>
+        <span>栈 Go 1.26 + Vue3 + uni-app</span>
+        <span>数据库 云 PostgreSQL</span>
+      </div>
+    </header>
+
+    <div class="stat">
+      <div class="s good"><div class="n">6<small> / 6</small></div><div class="l">前端构建任务通过</div></div>
+      <div class="s good"><div class="n">52</div><div class="l">前端单元测试用例</div></div>
+      <div class="s good"><div class="n">0<small> issues</small></div><div class="l">golangci-lint 静态检查</div></div>
+      <div class="s warn"><div class="n">2<small> / 4</small></div><div class="l">验收标准已达成</div></div>
+    </div>
+
+    <h2 class="sec" id="s1"><span class="num">01</span>验收标准对照</h2>
+    <p>依据《开发计划与技术选型》§9 Phase 1 的四条验收标准逐项核对。</p>
+
+    <table>
+      <thead><tr><th style="width:52px">序</th><th>验收标准</th><th style="width:120px">状态</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-pri">①</td>
+          <td>后端起服务后 <code>curl /health</code> 返回正常</td>
+          <td><span class="tag later">部分达成</span></td>
+          <td>健康检查三态（<code>/health</code>、<code>/health/live</code>、<code>/health/ready</code>）已实现并被 16 个集成测试覆盖；但服务启动前置执行数据库迁移，<strong>本机无 PostgreSQL 实例</strong>，尚未实机验证完整启动链路。</td>
+        </tr>
+        <tr>
+          <td class="td-pri">②</td>
+          <td>前端 <code>pnpm dev</code> 打开登录页，用种子账号登录成功，看到 Dashboard 占位页</td>
+          <td><span class="tag err">待验证</span></td>
+          <td>登录页、路由守卫、Pinia 会话、401 自动续期与跳转均已实现并通过单测；<strong>端到端登录依赖云 PostgreSQL 连接串</strong>，尚未实测。</td>
+        </tr>
+        <tr>
+          <td class="td-pri">③</td>
+          <td>uni-app 能编译出小程序包</td>
+          <td><span class="tag core">已达成</span></td>
+          <td><code>uni build -p mp-weixin</code> 产出 <code>app.js</code> / <code>app.json</code> / 页面文件；H5 端同样构建通过。</td>
+        </tr>
+        <tr>
+          <td class="td-pri">④</td>
+          <td>CI 全绿</td>
+          <td><span class="tag err">受阻</span></td>
+          <td>两个 workflow 均已推送并被 GitHub 正确解析（新增的契约校验 job 也被创建），但全部 job 在<strong>启动阶段</strong>即失败——账号账单锁定，与代码无关。详见第 06 节。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn">
+      <span class="ct">结论：Phase 1 尚未达到「达标」状态</span>
+      代码与工程门禁本身已完成并全量验证通过；剩余两项验收标准均卡在<strong>外部条件</strong>上——云数据库连接串与 GitHub 账号账单。这两项解决后即可补完端到端验证。
+    </div>
+
+    <h2 class="sec" id="s2"><span class="num">02</span>交付清单</h2>
+
+    <h3 class="sub"><span class="dot"></span>仓库结构</h3>
+    <pre class="tree"><span class="c1">研脉学术知识付费平台/</span>
+├── <span class="c2">apps/</span>                          各端前端应用
+│   ├── admin-web/                管理后台        <span class="cm">Vue3 + Vite + Element Plus</span>
+│   ├── lecturer-web/             讲师工作台      <span class="cm">Vue3 + Vite + Element Plus</span>
+│   └── user-uniapp/              小程序 / H5     <span class="cm">uni-app (Vue3)</span>
+├── <span class="c2">services/api/</span>                 后端            <span class="cm">Go 1.26 + Gin 模块化单体</span>
+│   ├── cmd/server/               程序入口（含 swag 全局注解）
+│   ├── internal/
+│   │   ├── config/               Viper 配置加载与聚合校验
+│   │   ├── database/             PostgreSQL 连接 / 迁移 / 健康探测
+│   │   ├── middleware/           链路 ID / 日志 / 恢复 / CORS / 限流 / 鉴权
+│   │   ├── modules/              12 个业务域（六件套分层）
+│   │   └── router/               全局路由聚合
+│   ├── migrations/               golang-migrate SQL（embed 进二进制）
+│   ├── pkg/                      errs / httpx / response / jwt / logger / hash / queue
+│   ├── docs/                     swagger.json / swagger.yaml（契约来源）
+│   └── scripts/smoke.sh          端到端冒烟脚本
+├── <span class="c2">packages/</span>                     前端共享包
+│   ├── ui/                       @yanmai/ui          设计系统组件库
+│   ├── api-client/               @yanmai/api-client  接口 SDK + 契约类型
+│   ├── shared/                   @yanmai/shared      类型 / 常量 / 工具
+│   └── config/                   @yanmai/config      ESLint / Prettier / TS 共享配置
+├── <span class="c2">infra/</span>                        nginx 模板 / 数据库初始化 SQL
+├── <span class="c3">docs/</span>                         四份 HTML 交付文档
+└── <span class="c3">.github/workflows/</span>            CI：api.yml（含契约校验）/ web.yml
+</pre>
+
+    <h3 class="sub"><span class="dot"></span>后端能力</h3>
+    <ul>
+      <li><strong>模块化单体</strong>：<code>internal/modules/&lt;domain&gt;</code> 每模块 handler / service / repository / dto / model / router 六件套；<code>auth</code> 与 <code>user</code> 完整实现，其余 10 个业务域以 501 占位模块注册。</li>
+      <li><strong>统一响应信封</strong>：<code>{code, message, data, traceId}</code>；业务错误码集中于 <code>pkg/errs</code>，Code → HTTP 状态映射集中于 <code>pkg/httpx</code>。</li>
+      <li><strong>认证闭环</strong>：注册 / 登录 / 刷新 / 登出，JWT 双 Token（access + refresh，<code>typ</code> 声明强校验），bcrypt 口令哈希，登录失败统一返回「账号或密码不正确」以防账号枚举。</li>
+      <li><strong>RBAC 骨架</strong>：<code>RequireAuth</code> / <code>RequireRole</code> 中间件，<code>CurrentUser</code> 上下文注入。</li>
+      <li><strong>可观测性</strong>：链路 ID 贯穿请求、zap 结构化日志（含 GORM 桥接）、panic 恢复、连接串自动脱敏。</li>
+      <li><strong>数据库</strong>：GORM + golang-migrate，SQL 经 <code>go:embed</code> 内嵌二进制；首个迁移建 <code>users</code> 表（含部分唯一索引 <code>WHERE deleted_at IS NULL</code>）并附可回滚 down 脚本；种子账号三个。</li>
+    </ul>
+
+    <h3 class="sub"><span class="dot"></span>前端能力</h3>
+    <ul>
+      <li><strong>管理后台</strong>：登录页 → 工作台（业务域进度 + 后端健康状态）→ 用户管理（分页 / 关键字 / 角色 / 状态筛选）→ 401 自动续期与跳转。</li>
+      <li><strong>讲师工作台</strong>：同构实现，视觉上以学术金区分。</li>
+      <li><strong>uni-app</strong>：<code>uni.request</code> 自实现传输层（小程序无 XMLHttpRequest），tabBar 两页，可编译微信小程序与 H5。</li>
+      <li><strong>共享层</strong>：设计令牌与 Element Plus 主题覆盖、接口 SDK（Bearer 注入 / 信封拆解 / 401 自动续期与并发去重）、类型与常量。</li>
+    </ul>
+
+    <h2 class="sec" id="s3"><span class="num">03</span>验证证据</h2>
+    <p>以下命令均在提交前于本机实际执行，结果如下。</p>
+
+    <table>
+      <thead><tr><th style="width:180px">检查项</th><th>命令</th><th style="width:190px">结果</th></tr></thead>
+      <tbody>
+        <tr><td class="td-pri">Go 编译</td><td><code>go build ./...</code></td><td>通过</td></tr>
+        <tr><td class="td-pri">Go 静态检查</td><td><code>go vet ./...</code></td><td>通过</td></tr>
+        <tr><td class="td-pri">Go 格式</td><td><code>gofmt -l .</code></td><td>无待格式化文件</td></tr>
+        <tr><td class="td-pri">Go Lint</td><td><code>golangci-lint run ./...</code></td><td><strong>0 issues</strong></td></tr>
+        <tr><td class="td-pri">Go 单元 / 集成测试</td><td><code>go test ./...</code></td><td>全部通过（router 覆盖率 96%）</td></tr>
+        <tr><td class="td-pri">前端构建</td><td><code>pnpm build</code></td><td>6 / 6 任务通过</td></tr>
+        <tr><td class="td-pri">前端 Lint</td><td><code>pnpm lint</code></td><td>9 / 9 任务通过</td></tr>
+        <tr><td class="td-pri">前端类型检查</td><td><code>pnpm typecheck</code></td><td>9 / 9 任务通过</td></tr>
+        <tr><td class="td-pri">前端测试</td><td><code>pnpm test</code></td><td>5 个包共 <strong>52 个用例</strong>全绿</td></tr>
+        <tr><td class="td-pri">代码格式统一</td><td><code>prettier --check .</code></td><td>全部符合规范</td></tr>
+        <tr><td class="td-pri">OpenAPI 文档</td><td><code>make swagger</code></td><td>8 条路径 + BearerAuth</td></tr>
+        <tr><td class="td-pri">依赖一致性</td><td><code>go mod tidy</code> / <code>pnpm install --frozen-lockfile</code></td><td>均无差异</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub"><span class="dot"></span>覆盖率明细</h3>
+    <table>
+      <thead><tr><th>包</th><th style="width:120px">覆盖率</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td class="td-pri">internal/router</td><td><strong>96.0%</strong></td><td>16 个 httptest 集成用例：健康检查、登录、鉴权、RBAC、刷新、占位模块、错误处理</td></tr>
+        <tr><td class="td-pri">pkg/jwt</td><td>80%</td><td>双 Token 签发 / 解析 / 类型不匹配 / 过期</td></tr>
+        <tr><td class="td-pri">pkg/hash</td><td>80%</td><td>bcrypt 哈希与校验</td></tr>
+        <tr><td class="td-pri">internal/modules/user</td><td>31.6%</td><td>服务层校验与鉴权分支</td></tr>
+        <tr><td class="td-pri">internal/config</td><td>32.2%</td><td>配置校验与 DSN 脱敏</td></tr>
+        <tr><td class="td-pri">pkg/httpx</td><td>18.3%</td><td>错误码全表映射</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="sec" id="s4"><span class="num">04</span>工程门禁</h2>
+    <p>本轮补齐了 Phase 1 清单中三项此前未落地的基础设施，均由 CI 强制执行。</p>
+
+    <div class="grid g3">
+      <div class="card">
+        <h5><span class="ic">1</span>契约闭环</h5>
+        <p>swag 注解 → OpenAPI → 前端契约类型自动生成，一条 <code>make sdk</code> 完成。</p>
+      </div>
+      <div class="card">
+        <h5><span class="ic">2</span>静态检查</h5>
+        <p>golangci-lint v2 配置，7 类「能发现真实缺陷」的检查器，格式交给 gofmt + goimports。</p>
+      </div>
+      <div class="card">
+        <h5><span class="ic">3</span>提交门禁</h5>
+        <p>Husky + lint-staged 自动修复与格式化，commitlint 强制提交信息规范。</p>
+      </div>
+    </div>
+
+    <h3 class="sub"><span class="dot"></span>契约闭环</h3>
+    <p>生成链为 <code>swag</code>（Swagger 2.0）→ <code>swagger2openapi</code> → <code>openapi-typescript</code>。swag 目前没有任何 OpenAPI 3.x 输出选项，而 openapi-typescript 只接受 3.x，因此中间必须做一次规范转换。</p>
+    <p>生成产物 <code>schema.d.ts</code> 与 <code>@yanmai/shared</code> 中的手写类型由 <code>contract.ts</code> 做<strong>编译期断言</strong>：后端删除或改名字段会在 <code>pnpm typecheck</code> 阶段直接报错，而不是等到运行时。断言方向取「前端声明的字段是否仍存在于契约中」——后端新增字段属兼容变更，不报警。</p>
+    <div class="callout tip">
+      <span class="ct">已验证断言真实有效（负向测试）</span>
+      手动删除契约中的 <code>phone</code> 字段后，编译报出 <code>contract.ts(68,10): error TS2344: Type 'false' does not satisfy the constraint 'true'</code>；恢复后即消失。这一验证过程还暴露了一个陷阱：TypeScript 会跳过「未被引用的类型别名」的约束求值，因此断言必须写成值级声明。
+    </div>
+
+    <h3 class="sub"><span class="dot"></span>静态检查与提交门禁</h3>
+    <table>
+      <thead><tr><th style="width:170px">门禁</th><th>配置</th><th>触发时机</th></tr></thead>
+      <tbody>
+        <tr><td class="td-pri">golangci-lint</td><td>bodyclose / errorlint / gocritic / misspell / nilerr / unconvert / whitespace</td><td>CI 与本地 <code>make lint</code></td></tr>
+        <tr><td class="td-pri">Prettier</td><td><code>.prettierrc.json</code> 引用 <code>@yanmai/config/prettier</code></td><td>pre-commit（暂存文件）</td></tr>
+        <tr><td class="td-pri">ESLint</td><td>ESLint 9 Flat Config，按 workspace 分组执行</td><td>pre-commit 与 CI</td></tr>
+        <tr><td class="td-pri">commitlint</td><td>Conventional Commits，标题允许中文</td><td>commit-msg</td></tr>
+        <tr><td class="td-pri">契约一致性</td><td>重新生成文档与类型后 <code>git diff --exit-code</code> 比对</td><td>CI 的 contract 任务</td></tr>
+      </tbody>
+    </table>
+    <p>门禁已实测有效：不合规的提交信息被拒绝（<code>type-empty</code> / <code>subject-empty</code>）；脏格式文件提交后被自动改写。</p>
+
+    <h2 class="sec" id="s5"><span class="num">05</span>环境实测</h2>
+    <div class="env">
+      <div><b>Go</b>1.26.3　<span class="no">windows/386（32 位）</span></div>
+      <div><b>Node.js</b>22.22.2　<span class="yes">✓</span></div>
+      <div><b>pnpm</b>10.30.3　<span class="yes">✓</span></div>
+      <div><b>Git</b>2.55.0　<span class="yes">✓</span></div>
+      <div><b>PostgreSQL</b><span class="no">本机未安装</span></div>
+      <div><b>Docker</b><span class="no">未安装</span></div>
+      <div><b>GOPROXY</b>goproxy.cn　<span class="yes">✓</span></div>
+      <div><b>golangci-lint</b>v2.14.0（386）<span class="yes">✓</span></div>
+    </div>
+
+    <div class="callout warn">
+      <span class="ct">Go 为 32 位版本</span>
+      该风险在《开发计划与技术选型》§11 风险表中已列出，建议的处置时点是「Phase 1 前完成」，目前尚未升级。影响：编译大规模并发构建时受内存寻址限制，且部分工具链需专门挑选 386 产物（golangci-lint 即为此额外确认了 windows-386 包）。建议在 Phase 2 开工前升级为 64 位。
+    </div>
+
+    <h2 class="sec" id="s6"><span class="num">06</span>遗留与阻塞</h2>
+
+    <h3 class="sub"><span class="dot"></span>阻塞项（需外部条件解决）</h3>
+    <table>
+      <thead><tr><th style="width:150px">阻塞</th><th>现象</th><th>影响</th><th>解决路径</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="td-pri">云 PostgreSQL</td>
+          <td>本机实测确认无任何 PostgreSQL：<code>psql</code> / <code>pg_ctl</code> 不存在、5432 端口未监听、无相关系统服务</td>
+          <td>验收标准 ①② 无法完成；服务启动即执行迁移，缺库时按设计明确报错退出</td>
+          <td>提供连接串并填入 <code>services/api/.env.local</code> 的 <code>DATABASE_URL</code></td>
+        </tr>
+        <tr>
+          <td class="td-pri">GitHub 账号锁定</td>
+          <td>全部 CI job 在启动阶段失败，零步骤记录，官方注解原文：<em>「The job was not started because your account is locked due to a billing issue.」</em></td>
+          <td>验收标准 ④ 无法完成；CI 的实际执行逻辑无法得到验证</td>
+          <td>处理账号账单：<code>https://github.com/settings/billing</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub"><span class="dot"></span>技术债（不阻塞，建议尽早处理）</h3>
+    <ul>
+      <li><strong>Go 32 位</strong>：见第 05 节，建议 Phase 2 前升级。</li>
+      <li><strong>请求方法仍为手写</strong>：<code>@yanmai/api-client</code> 的模块方法手写、类型由 OpenAPI 生成。接口数量上来后可切换为完全生成。</li>
+      <li><strong>依赖树 peer 警告</strong>：<code>@vueuse/core@15</code> 要求 <code>vue@^3.5</code>，而 uni-app 端锁定 <code>vue@3.4.21</code>。构建与运行均正常，暂不处理。</li>
+      <li><strong>教师端业务为空</strong>：当前仅有登录与工作台骨架。</li>
+      <li><strong>管理后台未做代码分割</strong>：主包体积偏大。</li>
+      <li><strong>无 E2E</strong>：Playwright 用例待补。</li>
+    </ul>
+
+    <h3 class="sub"><span class="dot"></span>已识别的设计取舍（非缺陷）</h3>
+    <ul>
+      <li><strong>登出为无状态</strong>：服务端暂无 Token 黑名单，由客户端丢弃令牌。服务端失效依赖 Redis，排在 Phase 2。</li>
+      <li><strong>缺 <code>REDIS_ADDR</code> 时队列降级禁用</strong>：asynq 仅生产者侧就绪，消费者待后续阶段。</li>
+      <li><strong>迁移失败即拒绝启动</strong>：不允许在未迁移的库上对外服务，这是有意为之的失败模式。</li>
+    </ul>
+
+    <h2 class="sec" id="s7"><span class="num">07</span>下一步</h2>
+    <div class="check">
+      <ul>
+        <li class="todo">提供云 PostgreSQL 连接串 → 落实验收标准 ①②（种子账号端到端登录闭环）</li>
+        <li class="todo">处理 GitHub 账号账单 → 触发 CI 重跑，落实验收标准 ④</li>
+        <li class="done">三项工程欠账已补齐（契约闭环 / golangci-lint / 提交门禁）</li>
+        <li>进入 Phase 2 账号与权限体系，建议从 <strong>RBAC 权限模型</strong>起手——纯自研、零外部依赖</li>
+        <li>并行启动外部资质申请：短信服务商与微信开放平台（认证周期通常 1–7 个工作日），它们是 Phase 2 中「手机号登录 / 微信登录」的前置条件</li>
+      </ul>
+    </div>
+
+    <footer>
+      <span>研脉学术知识付费平台 · Phase 1 交付与验收报告</span>
+      <span>2026-10-12 · 仓库 dac1992/Knowledge-based-payment-platform</span>
+    </footer>
+
+  </div>
+  </main>
+</div>
+
+<script>
+  const prog = document.getElementById('prog');
+  const links = Array.from(document.querySelectorAll('#toc a'));
+  const targets = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+  function onScroll() {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    prog.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+
+    let current = targets[0];
+    for (const t of targets) {
+      if (t.getBoundingClientRect().top <= 120) current = t;
+    }
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + (current && current.id)));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+</body>
+</html>
