@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研脉学术知识付费平台 · 产品功能文档 v1.0</title>
+<style>
+  :root{
+    --primary:#1A56DB; --primary-dark:#0E3A99; --primary-light:#EBF1FE;
+    --accent:#C9A227; --accent-light:#FBF4DF;
+    --ink:#1A1F2B; --ink-2:#3D4759; --ink-3:#6B7688; --ink-4:#98A2B3;
+    --line:#E4E8EF; --line-2:#EEF1F6; --bg:#F4F6FA; --card:#FFFFFF;
+    --ok:#16A34A; --ok-bg:#E9F8EF; --warn:#D97706; --warn-bg:#FEF5E7;
+    --err:#DC2626; --err-bg:#FDECEC; --info:#2563EB; --info-bg:#EBF1FE;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.78; font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .layout{display:flex; max-width:1440px; margin:0 auto; gap:0; align-items:flex-start;}
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width:280px; flex:none; position:sticky; top:0; height:100vh; overflow-y:auto;
+    padding:28px 20px 60px; background:#0F1A2E; color:#C7D2E4;
+  }
+  .sidebar .brand{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .sidebar .logo{
+    width:34px;height:34px;border-radius:9px;flex:none;
+    background:linear-gradient(135deg,#2E6BFF,#1A56DB); display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:15px;letter-spacing:.5px;
+  }
+  .sidebar .brand b{color:#fff;font-size:15px;display:block;letter-spacing:.3px;}
+  .sidebar .brand span{font-size:11px;color:#7C8CAA;}
+  .sidebar .doc-title{font-size:12px;color:#8C9BB8;margin:16px 0 14px;padding-top:14px;border-top:1px solid #22304A;}
+  .sidebar nav a{
+    display:block; padding:7px 12px; font-size:13.5px; color:#AEBBD0; text-decoration:none;
+    border-radius:7px; margin-bottom:2px; border-left:2px solid transparent; transition:.16s;
+  }
+  .sidebar nav a:hover{background:#1A2942; color:#fff;}
+  .sidebar nav a.l2{padding-left:24px; font-size:12.5px; color:#8E9DB8;}
+  .sidebar nav a.l3{padding-left:36px; font-size:12px; color:#7F8FA8;}
+  .sidebar nav a.active{background:#1A2942;color:#fff;border-left-color:var(--accent);}
+
+  /* ---------- Main ---------- */
+  .main{flex:1; min-width:0; padding:40px 48px 100px;}
+  .doc{max-width:1000px;}
+  header.cover{
+    background:linear-gradient(135deg,#0E3A99 0%,#1A56DB 55%,#3B7BFF 100%);
+    color:#fff; border-radius:16px; padding:44px 44px 40px; position:relative; overflow:hidden;
+    box-shadow:0 18px 40px -18px rgba(26,86,219,.55);
+  }
+  header.cover::after{
+    content:""; position:absolute; right:-60px; top:-60px; width:280px; height:280px;
+    background:radial-gradient(circle,rgba(255,255,255,.14),transparent 70%); border-radius:50%;
+  }
+  header.cover .eyebrow{font-size:12.5px;letter-spacing:3px;color:#BBD0FF;font-weight:600;}
+  header.cover h1{font-size:33px;line-height:1.3;margin:12px 0 8px;font-weight:800;letter-spacing:.5px;}
+  header.cover .sub{font-size:15px;color:#D6E2FF;max-width:640px;}
+  header.cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;}
+  header.cover .meta span{
+    font-size:12.5px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    padding:5px 13px;border-radius:20px;backdrop-filter:blur(4px);
+  }
+  h2.sec{
+    font-size:23px;margin:54px 0 20px;padding-left:16px;position:relative;font-weight:800;letter-spacing:.3px;
+  }
+  h2.sec::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px;border-radius:3px;
+    background:linear-gradient(180deg,var(--primary),var(--accent));}
+  h2.sec .num{color:var(--primary);font-size:15px;font-weight:700;margin-right:8px;opacity:.7;}
+  h3.sub{font-size:17.5px;margin:32px 0 12px;font-weight:700;color:var(--ink);padding-bottom:7px;border-bottom:1px solid var(--line-2);}
+  h3.sub .dot{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--primary);margin-right:9px;transform:rotate(45deg) translateY(-1px);}
+  h4{font-size:15px;margin:20px 0 8px;font-weight:700;color:var(--primary-dark);}
+  p{margin:10px 0;color:var(--ink-2);}
+  ul,ol{margin:10px 0 10px 4px;padding-left:22px;color:var(--ink-2);}
+  li{margin:5px 0;}
+  li::marker{color:var(--primary);}
+  strong{color:var(--ink);font-weight:700;}
+  code{background:#EEF1F6;color:#0E3A99;padding:1px 6px;border-radius:5px;font-size:13px;
+    font-family:"JetBrains Mono",Consolas,Monaco,monospace;}
+  a{color:var(--primary);}
+  /* tables */
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;background:var(--card);
+    border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 2px rgba(16,30,54,.06),0 0 0 1px var(--line);}
+  th{background:#F2F5FB;text-align:left;padding:11px 14px;font-weight:700;color:var(--ink);font-size:13px;
+    border-bottom:1px solid var(--line);white-space:nowrap;}
+  td{padding:10px 14px;border-bottom:1px solid var(--line-2);color:var(--ink-2);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#FAFBFE;}
+  tbody tr:hover{background:#F4F8FF;}
+  .td-pri{font-weight:700;color:var(--ink);white-space:nowrap;}
+  /* callouts */
+  .callout{border-radius:var(--radius);padding:14px 18px 14px 18px;margin:16px 0;font-size:13.8px;
+    border-left:4px solid var(--primary);background:var(--info-bg);color:var(--ink-2);}
+  .callout b{color:var(--ink);}
+  .callout.tip{border-color:var(--ok);background:var(--ok-bg);}
+  .callout.warn{border-color:var(--warn);background:var(--warn-bg);}
+  .callout.err{border-color:var(--err);background:var(--err-bg);}
+  .callout .ct{display:block;font-weight:800;color:var(--ink);margin-bottom:3px;font-size:13.5px;}
+  /* tags */
+  .tag{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:20px;font-weight:600;line-height:1.6;}
+  .tag.p1{background:#FDECEC;color:#C81E1E;}
+  .tag.p2{background:#FEF5E7;color:#B45309;}
+  .tag.p3{background:#EBF1FE;color:#1D4ED8;}
+  .tag.do{background:#E9F8EF;color:#15803D;}
+  /* grid cards */
+  .grid{display:grid;gap:14px;margin:18px 0;}
+  .grid.g2{grid-template-columns:repeat(2,1fr);}
+  .grid.g3{grid-template-columns:repeat(3,1fr);}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px 16px;
+    box-shadow:0 1px 2px rgba(16,30,54,.05);}
+  .card h5{font-size:14.5px;margin-bottom:6px;color:var(--ink);display:flex;align-items:center;gap:8px;}
+  .card h5 .ic{width:26px;height:26px;border-radius:7px;background:var(--primary-light);color:var(--primary);
+    display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;font-weight:800;}
+  .card p{font-size:13.2px;margin:4px 0;color:var(--ink-3);}
+  /* architecture diagram */
+  .arch{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin:18px 0;
+    box-shadow:0 1px 2px rgba(16,30,54,.05);}
+  .arch-layer{margin-bottom:14px;}
+  .arch-layer .lbl{font-size:11.5px;font-weight:700;color:var(--ink-4);letter-spacing:1px;margin-bottom:7px;}
+  .arch-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .arch-node{flex:1;min-width:120px;text-align:center;padding:13px 10px;border-radius:8px;font-size:13px;font-weight:600;
+    background:#F2F5FB;color:var(--ink-2);border:1px solid var(--line);}
+  .arch-node.hi{background:linear-gradient(135deg,#1A56DB,#3B7BFF);color:#fff;border-color:transparent;
+    box-shadow:0 6px 16px -8px rgba(26,86,219,.7);}
+  .arch-node.acc{background:var(--accent-light);color:#8A6D12;border-color:#EADCB0;}
+  .arch-node small{display:block;font-weight:400;font-size:11px;opacity:.8;margin-top:2px;}
+  .arrowdown{text-align:center;color:var(--line);font-size:16px;margin:2px 0 6px;}
+  /* flow */
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:16px 0;}
+  .flow .step{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:9px 14px;font-size:13px;
+    font-weight:600;color:var(--ink-2);}
+  .flow .step.k{background:var(--primary-light);color:var(--primary-dark);border-color:#C9DAFB;}
+  .flow .ar{color:var(--ink-4);font-weight:700;}
+  /* footer */
+  footer{margin-top:70px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-4);font-size:12.5px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .toc-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));z-index:99;width:0;}
+  @media (max-width:1080px){
+    .sidebar{display:none;} .main{padding:28px 20px 80px;} .grid.g3,.grid.g2{grid-template-columns:1fr;}
+    header.cover{padding:32px 24px;} header.cover h1{font-size:25px;}
+  }
+  @media print{ .sidebar{display:none;} body{background:#fff;} .main{padding:0;} }
+</style>
+</head>
+<body>
+<div class="toc-progress" id="prog"></div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">研</div>
+      <div><b>研脉学术</b><span>Knowledge Platform</span></div>
+    </div>
+    <div class="doc-title">产品功能文档 · v1.0</div>
+    <nav id="nav">
+      <a href="#s1">1. 文档信息</a>
+      <a href="#s2">2. 产品概述</a>
+      <a href="#s3">3. 市场与竞品分析</a>
+      <a href="#s4">4. 产品整体架构</a>
+      <a href="#s5">5. 角色与权限体系</a>
+      <a href="#s6">6. 功能模块详述</a>
+      <a href="#s6-1" class="l2">6.1 后台管理 Web 端</a>
+      <a href="#s6-2" class="l2">6.2 讲师操作 Web 端</a>
+      <a href="#s6-3" class="l2">6.3 用户小程序端</a>
+      <a href="#s6-4" class="l2">6.4 用户 PC / H5 端</a>
+      <a href="#s6-5" class="l2">6.5 用户 APP 端</a>
+      <a href="#s6-6" class="l2">6.6 用户 PC 本地端</a>
+      <a href="#s7">7. 核心业务流程</a>
+      <a href="#s8">8. 会员与增长体系</a>
+      <a href="#s9">9. 技术架构建议</a>
+      <a href="#s10">10. 内容安全与合规</a>
+      <a href="#s11">11. 非功能需求</a>
+      <a href="#s12">12. 版本规划 Roadmap</a>
+      <a href="#s13">13. 附录：数据字典</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="doc">
+      <header class="cover">
+        <div class="eyebrow">PRODUCT REQUIREMENT DOCUMENT</div>
+        <h1>研脉学术知识付费平台<br>产品功能文档</h1>
+        <div class="sub">面向学术科研人群的知识付费与在线学习平台 —— 覆盖管理后台、讲师工作台、用户小程序 / PC / APP / 桌面客户端六端矩阵。</div>
+        <div class="meta">
+          <span>版本 v1.0（初稿）</span>
+          <span>状态：待评审</span>
+          <span>更新：2026-10-12</span>
+          <span>产品：研脉学术（北京）智能科技有限公司</span>
+        </div>
+      </header>
+
+      <!-- ============ 1 ============ -->
+      <h2 class="sec" id="s1"><span class="num">01</span>文档信息</h2>
+      <h3 class="sub"><span class="dot"></span>1.1 文档目的</h3>
+      <p>本文档定义「研脉学术知识付费平台」的完整产品形态与功能边界，作为产品、设计、研发、测试、运营团队的统一协作基线。文档覆盖六端产品的功能范围、角色权限、核心业务流程与技术约束。</p>
+      <h3 class="sub"><span class="dot"></span>1.2 术语定义</h3>
+      <table>
+        <thead><tr><th>术语</th><th>全称 / 英文</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">SPU</td><td>Standard Product Unit</td><td>标准化产品单元，如「SCI 论文写作训练营」</td></tr>
+          <tr><td class="td-pri">SKU</td><td>Stock Keeping Unit</td><td>最小可售卖单元，如「训练营 · 早鸟价 / 原价」</td></tr>
+          <tr><td class="td-pri">专栏</td><td>Column</td><td>图文/音视频的系列合集，一次性售卖、持续更新</td></tr>
+          <tr><td class="td-pri">训练营</td><td>Bootcamp</td><td>有明确起止时间、强督学、作业与结业的班级制产品</td></tr>
+          <tr><td class="td-pri">圈子</td><td>Circle</td><td>付费/免费社群，承载话题、问答、打卡、资料沉淀</td></tr>
+          <tr><td class="td-pri">DRM</td><td>Digital Rights Management</td><td>数字版权保护，防录屏、防盗链、水印溯源</td></tr>
+          <tr><td class="td-pri">CDN</td><td>Content Delivery Network</td><td>内容分发网络，用于音视频加速播放</td></tr>
+        </tbody>
+      </table>
+      <h3 class="sub"><span class="dot"></span>1.3 修订记录</h3>
+      <table>
+        <thead><tr><th>版本</th><th>日期</th><th>修订人</th><th>主要变更</th></tr></thead>
+        <tbody>
+          <tr><td>v1.0</td><td>2026-10-12</td><td>产品部</td><td>初稿：完成六端功能框架、角色权限、核心流程定义</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ============ 2 ============ -->
+      <h2 class="sec" id="s2"><span class="num">02</span>产品概述</h2>
+      <h3 class="sub"><span class="dot"></span>2.1 产品定位</h3>
+      <div class="callout tip">
+        <span class="ct">一句话定位</span>
+        面向<b>学术科研人群</b>（研究生、高校教师、科研院所研究员、医学科研人员）的一站式知识付费与在线学习平台，以「<b>学术课程 + 科研训练营 + 专家直播 + 学术社群</b>」为核心，打通内容生产、交易转化、学习交付与用户运营全链路。
+      </div>
+      <p>与泛知识付费平台（得到、千聊、知识星球）的差异在于：研脉以<b>学术垂直深度</b>为护城河，内容形态偏「体系化课程 + 强交付训练营」，用户画像高知、高客单、高复购，对内容专业性、数据准确性、学术合规性要求更高。</p>
+
+      <h3 class="sub"><span class="dot"></span>2.2 目标用户与角色</h3>
+      <div class="grid g3">
+        <div class="card"><h5><span class="ic">学</span>学员（C 端）</h5><p>研究生 / 博士生 / 青年科研人员 / 高校教师。诉求：技能提升（论文写作、统计分析、科研绘图）、考证、跟对导师。</p></div>
+        <div class="card"><h5><span class="ic">师</span>讲师（B/C 端）</h5><p>高校教授、科研大牛、期刊编辑、行业专家。诉求：知识变现、个人 IP 打造、沉淀学术影响力。</p></div>
+        <div class="card"><h5><span class="ic">商</span>机构（B 端）</h5><p>高校、科研院所、期刊社、学术会议主办方。诉求：批量采购课程、内部培训、学员管理。</p></div>
+      </div>
+
+      <h3 class="sub"><span class="dot"></span>2.3 核心价值主张</h3>
+      <table>
+        <thead><tr><th>对象</th><th>核心价值</th><th>关键支撑能力</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">学员</td><td>学得会、有人督、能被认可</td><td>体系化课程 + 训练营督学 + 作业点评 + 结业证书 + 学术社群</td></tr>
+          <tr><td class="td-pri">讲师</td><td>省心交付、持续变现</td><td>零门槛建课工具 + 直播能力 + 分销裂变 + 自动结算 + 学员数据</td></tr>
+          <tr><td class="td-pri">平台</td><td>内容资产沉淀、可规模化</td><td>统一账号体系 + 数据中台 + 内容风控 + 多端分发</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub"><span class="dot"></span>2.4 商业模式</h3>
+      <ul>
+        <li><strong>课程售卖：</strong>单课、专栏、训练营、会员订阅（月/季/年/永久）。</li>
+        <li><strong>直播付费：</strong>单场直播票、系列直播专栏、直播回放。</li>
+        <li><strong>会员体系：</strong>超级会员免费学 / 折扣学，提高复购与留存。</li>
+        <li><strong>分佣分销：</strong>学员分享员、达人推广、机构代理三级分销体系。</li>
+        <li><strong>机构采购：</strong>B 端批量授权、企业培训包、会议配套课程包。</li>
+        <li><strong>增值服务：</strong>1V1 论文辅导、专家咨询、查重/润色等学术服务撮合。</li>
+      </ul>
+
+      <!-- ============ 3 ============ -->
+      <h2 class="sec" id="s3"><span class="num">03</span>市场与竞品分析</h2>
+      <h3 class="sub"><span class="dot"></span>3.1 主流平台对比</h3>
+      <table>
+        <thead><tr><th>平台</th><th>定位</th><th>核心优势</th><th>主要短板</th><th>对研脉的启示</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">小鹅通</td><td>私域知识付费 SaaS</td><td>多端（H5/小程序/APP/PC）一站式，营销工具 50+，AI Agent 矩阵</td><td>年费高、配置复杂、内容非自营</td><td>对标其「工具+营销+多端」，但要做得更轻、更垂直</td></tr>
+          <tr><td class="td-pri">千聊</td><td>直播 + 训练营卖课</td><td>直播成熟（连麦/打赏/课件同步），零门槛开播</td><td>有抽成、私域沉淀弱</td><td>训练营交付与直播互动要做深</td></tr>
+          <tr><td class="td-pri">知识星球</td><td>付费社群</td><td>社群粘性强、上手快、微信生态触达高</td><td>无章节/课时/考试/作业，难做高溢价</td><td>「圈子」模块补齐社群，但不作为主形态</td></tr>
+          <tr><td class="td-pri">得到</td><td>精品内容品牌</td><td>内容质量高、用户付费意愿强</td><td>合作门槛高、自主运营空间小</td><td>可做「研脉精选」自营精品栏目</td></tr>
+          <tr><td class="td-pri">知乎盐选</td><td>信任型内容平台</td><td>长尾搜索流量、专业信任背书</td><td>无法直接卖课、链路长、抽成高</td><td>用知乎/公众号做信任前置 + 内容引流</td></tr>
+          <tr><td class="td-pri">网易云课堂</td><td>标准化课程卖场</td><td>类目清晰、用户稳定</td><td>个性化运营与私域能力弱</td><td>标准化课程体系可参考，私域必须自建</td></tr>
+          <tr><td class="td-pri">荔枝微课</td><td>轻量卖课工具</td><td>操作简单、上线快</td><td>系统扩展性弱、长期运营能力有限</td><td>轻量版体验可借鉴（低门槛建课）</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub"><span class="dot"></span>3.2 差异化定位</h3>
+      <div class="grid g2">
+        <div class="card"><h5><span class="ic">①</span>学术垂直深耕</h5><p>聚焦科研方法论、统计分析、论文写作、基金申报、医学临床科研等垂直品类，讲师需学术资质审核，建立专业壁垒。</p></div>
+        <div class="card"><h5><span class="ic">②</span>训练营强交付</h5><p>不止卖课，更卖「结果」。以班级制、作业点评、1V1 反馈、结业答辩、成果认证构成强交付闭环。</p></div>
+        <div class="card"><h5><span class="ic">③</span>六端全场景</h5><p>小程序轻触达、APP 深学习、PC 大屏办公学习、桌面客户端离线科研，覆盖学术人群全部使用场景。</p></div>
+        <div class="card"><h5><span class="ic">④</span>内容资产自主</h5><p>自建平台、数据自主、零平台抽成，课程与用户数据完全归平台与讲师共有，可私有化沉淀。</p></div>
+      </div>
+
+      <!-- ============ 4 ============ -->
+      <h2 class="sec" id="s4"><span class="num">04</span>产品整体架构</h2>
+      <h3 class="sub"><span class="dot"></span>4.1 六端矩阵</h3>
+      <div class="arch">
+        <div class="arch-layer">
+          <div class="lbl">用户端 · USER SIDE</div>
+          <div class="arch-row">
+            <div class="arch-node hi">微信小程序端<small>轻触达 / 分享 / 购买</small></div>
+            <div class="arch-node hi">用户 PC / H5 端<small>大屏浏览 / 学习</small></div>
+            <div class="arch-node hi">用户 APP 端<small>iOS / Android 深度学习</small></div>
+            <div class="arch-node hi">PC 本地客户端<small>Windows / Mac 离线科研</small></div>
+          </div>
+        </div>
+        <div class="arrowdown">▲ ▼</div>
+        <div class="arch-layer">
+          <div class="lbl">内容供给端 · SUPPLY SIDE</div>
+          <div class="arch-row">
+            <div class="arch-node acc">讲师操作 Web 端<small>建课 / 直播 / 教务 / 结算</small></div>
+            <div class="arch-node acc">管理后台 Web 端<small>平台运营 / 风控 / 财务</small></div>
+          </div>
+        </div>
+        <div class="arrowdown">▲ ▼ 统一 API 网关 / BFF</div>
+        <div class="arch-layer">
+          <div class="lbl">能力中台 · MIDDLE PLATFORM</div>
+          <div class="arch-row">
+            <div class="arch-node">账号 & 权限中心</div>
+            <div class="arch-node">课程内容中心</div>
+            <div class="arch-node">交易 & 支付中心</div>
+            <div class="arch-node">营销增长中心</div>
+            <div class="arch-node">学习行为中心</div>
+            <div class="arch-node">直播互动中心</div>
+          </div>
+        </div>
+        <div class="arrowdown">▲ ▼</div>
+        <div class="arch-layer">
+          <div class="lbl">基础设施 · INFRA</div>
+          <div class="arch-row">
+            <div class="arch-node">音视频点播 / 直播 (CDN + DRM)</div>
+            <div class="arch-node">对象存储 OSS</div>
+            <div class="arch-node">数据仓库 & 埋点</div>
+            <div class="arch-node">消息推送 / IM / 短信</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub"><span class="dot"></span>4.2 统一账号与身份体系</h3>
+      <p>全端共用一套<strong>统一用户中心（User Center）</strong>，通过手机号 + 微信 UnionID 打通身份，实现「小程序下单 → APP 学习 → PC 端看回放 → 桌面端下载资料」的无缝衔接。</p>
+      <table>
+        <thead><tr><th>能力</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">多端登录</td><td>手机号验证码 / 微信一键登录 / 账号密码 / 扫码登录（PC 端扫小程序码）</td></tr>
+          <tr><td class="td-pri">身份合并</td><td>同一手机号 + 微信 UnionID 自动合并为一个账号，学习进度与权益互通</td></tr>
+          <tr><td class="td-pri">Token 机制</td><td>JWT Access Token + Refresh Token，支持多设备在线、异地登录提醒、强制下线</td></tr>
+          <tr><td class="td-pri">权益同步</td><td>已购课程、会员状态、优惠券、积分、学习进度跨端实时同步</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ============ 5 ============ -->
+      <h2 class="sec" id="s5"><span class="num">05</span>角色与权限体系</h2>
+      <h3 class="sub"><span class="dot"></span>5.1 角色定义</h3>
+      <table>
+        <thead><tr><th>角色</th><th>所属端</th><th>核心权限范围</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">超级管理员</td><td>后台</td><td>全部功能、角色配置、系统设置、数据导出</td></tr>
+          <tr><td class="td-pri">运营经理</td><td>后台</td><td>课程审核、活动配置、首页装修、内容推荐</td></tr>
+          <tr><td class="td-pri">财务专员</td><td>后台</td><td>订单流水、对账、发票、讲师结算、退款审批</td></tr>
+          <tr><td class="td-pri">客服专员</td><td>后台</td><td>订单查询、退款工单、用户反馈、工单处理</td></tr>
+          <tr><td class="td-pri">内容审核员</td><td>后台</td><td>课程内容审核、评论审核、违规下架</td></tr>
+          <tr><td class="td-pri">讲师</td><td>讲师端</td><td>建课、上架申请、直播、学员管理、作业点评、查看本人收益</td></tr>
+          <tr><td class="td-pri">助教 / 班主任</td><td>讲师端</td><td>班级管理、作业批改、学员答疑、考勤打卡（受讲师授权）</td></tr>
+          <tr><td class="td-pri">学员</td><td>用户端</td><td>浏览、购买、学习、评论、打卡、分销</td></tr>
+          <tr><td class="td-pri">分销员 / 推广员</td><td>用户端</td><td>生成推广海报、查看佣金、提现</td></tr>
+          <tr><td class="td-pri">机构管理员</td><td>后台（子账号）</td><td>机构内成员管理、批量采购、学习报表</td></tr>
+        </tbody>
+      </table>
+      <h3 class="sub"><span class="dot"></span>5.2 权限模型</h3>
+      <p>采用 <strong>RBAC + 数据范围</strong> 模型：角色（Role）绑定菜单权限与操作权限（增/删/改/查/导出），数据范围控制可见数据（全部 / 本部门 / 本人 / 指定机构）。支持自定义角色与「数据权限矩阵」配置。</p>
+
+      <!-- ============ 6 ============ -->
+      <h2 class="sec" id="s6"><span class="num">06</span>功能模块详述</h2>
+      <p>下文按端拆解功能模块。优先级标注：<span class="tag p1">P1 必须有</span> <span class="tag p2">P2 应该有</span> <span class="tag p3">P3 可以有</span></p>
+
+      <!-- 6.1 -->
+      <h3 class="sub" id="s6-1"><span class="dot"></span>6.1 管理后台 Web 端（平台运营中枢）</h3>
+      <p>平台方使用的运营总控台，是所有资源、交易、数据的汇聚点。建议技术栈：React / Vue3 + Ant Design，响应式适配 1440px 及以上。</p>
+
+      <h4>6.1.1 数据看板（Dashboard）</h4>
+      <table>
+        <thead><tr><th>模块</th><th>关键指标</th><th>优先级</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">经营总览</td><td>今日 GMV、成交订单数、客单价、退款率、付费用户数、环比同比</td><td><span class="tag p1">P1</span></td></tr>
+          <tr><td class="td-pri">流量分析</td><td>UV/PV、访问来源（搜索/分享/广告/私域）、漏斗转化（曝光→详情→下单→支付）</td><td><span class="tag p1">P1</span></td></tr>
+          <tr><td class="td-pri">学习分析</td><td>完课率、活跃学员、学习时长、作业提交率、结业率</td><td><span class="tag p2">P2</span></td></tr>
+          <tr><td class="td-pri">商品分析</td><td>各课程销量/营收/转化率排行、退课率</td><td><span class="tag p1">P1</span></td></tr>
+          <tr><td class="td-pri">用户分析</td><td>新增/活跃/流失、会员构成、RFM 分层</td><td><span class="tag p2">P2</span></td></tr>
+        </tbody>
+      </table>
+
+      <h4>6.1.2 内容管理</h4>
+      <ul>
+        <li><strong>课程库：</strong>课程列表（SPU/SKU）、多条件筛选、批量上下架、排序、推荐位设置。</li>
+        <li><strong>课程审核：</strong>讲师提交 → 审核队列 → 通过/驳回（填写驳回原因）→ 上架；支持敏感词自动预检。</li>
+        <li><strong>内容形态管理：</strong>录播视频、音频、图文、专栏、训练营、直播、电子书、资料包。</li>
+        <li><strong>分类与标签：</strong>多级类目（学科 / 技能 / 场景）、标签体系、专题合集运营位。</li>
+        <li><strong>首页装修：</strong>可视化拖拽装修（轮播、金刚区、课程卡片、直播预告、合伙人位）。</li>
+        <li><strong>评论与问答：</strong>课程评论审核、精选、置顶、回复、举报处理。</li>
+      </ul>
+
+      <h4>6.1.3 交易与订单</h4>
+      <table>
+        <thead><tr><th>模块</th><th>功能点</th><th>优先级</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">订单管理</td><td>订单查询、详情、状态流转（待支付/已支付/已完成/已退款/已关闭）、备注、导出</td><td><span class="tag p1">P1</span></td></tr>
+          <tr><td class="td-pri">退款管理</td><td>退款申请工单、审批流、部分退款、退款原因统计、退课规则配置</td><td><span class="tag p1">P1</span></td></tr>
+          <tr><td class="td-pri">发票管理</td><td>开票申请、电子发票、纸质发票寄送、抬头管理</td><td><span class="tag p2">P2</span></td></tr>
+          <tr><td class="td-pri">支付配置</td><td>微信支付、支付宝、Apple 内购、余额、学习卡/兑换码</td><td><span class="tag p1">P1</span></td></tr>
+          <tr><td class="td-pri">对账中心</td><td>支付渠道对账单、账务流水、差异核对</td><td><span class="tag p2">P2</span></td></tr>
+        </tbody>
+      </table>
+
+      <h4>6.1.4 用户与会员管理</h4>
+      <ul>
+        <li><strong>用户列表：</strong>多条件检索、用户画像、标签、学习记录、订单记录、备注、封禁/解封。</li>
+        <li><strong>标签体系：</strong>手动标签 + 规则标签（如「近 30 天未登录」），支持标签圈人做定向推送。</li>
+        <li><strong>会员卡管理：</strong>会员权益配置（免费课/折扣/专属内容/专属客服）、有效期、价格阶梯。</li>
+        <li><strong>积分体系：</strong>积分获取规则（学习/打卡/邀请）、积分商城、积分兑换。</li>
+        <li><strong>等级成长：</strong>成长值规则、会员等级、等级权益。</li>
+      </ul>
+
+      <h4>6.1.5 营销中心</h4>
+      <div class="grid g3">
+        <div class="card"><h5><span class="ic">券</span>优惠券</h5><p>满减券、折扣券、新人券、定向券；发放方式：手动/领券中心/活动赠送。</p></div>
+        <div class="card"><h5><span class="ic">拼</span>拼团 / 秒杀</h5><p>2-5 人拼团、阶梯价；限时秒杀、限时折扣、打包套餐。</p></div>
+        <div class="card"><h5><span class="ic">分</span>分销体系</h5><p>推广员/达人/机构三级分佣、佣金比例、海报生成、佣金结算与提现。</p></div>
+        <div class="card"><h5><span class="ic">邀</span>邀请裂变</h5><p>邀请有礼、助力解锁、分享解锁、任务宝、社群裂变。</p></div>
+        <div class="card"><h5><span class="ic">活</span>活动管理</h5><p>活动创建、报名、签到、抽奖、打卡挑战、积分任务。</p></div>
+        <div class="card"><h5><span class="ic">推</span>消息触达</h5><p>站内信、短信、公众号模板消息、小程序订阅消息、APP 推送。</p></div>
+      </div>
+
+      <h4>6.1.6 直播管理</h4>
+      <ul>
+        <li>直播间创建、排期、预约、开播/停播、回放生成与剪辑。</li>
+        <li>直播互动配置：弹幕、点赞、打赏、抽奖、问答、投票、红包、连麦。</li>
+        <li>直播带货：挂载课程/商品、优惠券发放、限时秒杀。</li>
+        <li>直播数据：在线人数、峰值、观看时长、转化订单、互动量。</li>
+      </ul>
+
+      <h4>6.1.7 社群 / 圈子管理</h4>
+      <ul>
+        <li>圈子创建与审核，付费圈子定价与有效期。</li>
+        <li>话题、问答、打卡、资料库、精华沉淀、成员管理（禁言/移出）。</li>
+        <li>圈主（讲师）权限授予与内容风控。</li>
+      </ul>
+
+      <h4>6.1.8 财务结算</h4>
+      <ul>
+        <li>平台营收报表、讲师分成结算（按课时/按销售额/固定稿酬）、分销佣金结算。</li>
+        <li>提现申请审批、结算周期配置、结算单导出。</li>
+        <li>税票与合规：代扣代缴、完税凭证。</li>
+      </ul>
+
+      <h4>6.1.9 内容安全与风控</h4>
+      <ul>
+        <li>文本 / 图片 / 音视频自动审核（接入内容安全 API）+ 人工复审。</li>
+        <li>敏感词库、违禁内容拦截、用户举报处理、违规下架与封号。</li>
+        <li>版权保护：视频防录屏水印、防盗链、下载权限控制、DRM 加密。</li>
+      </ul>
+
+      <h4>6.1.10 系统设置</h4>
+      <ul>
+        <li>账号与角色权限、操作日志审计。</li>
+        <li>参数配置：平台名称、Logo、客服、协议（用户协议/隐私政策）、结算规则。</li>
+        <li>第三方对接：微信小程序/公众号/开放平台、支付、短信、IM、CDN、AI 能力。</li>
+      </ul>
+
+      <!-- 6.2 -->
+      <h3 class="sub" id="s6-2"><span class="dot"></span>6.2 讲师操作 Web 端（讲师工作台）</h3>
+      <p>讲师自助经营阵地，核心目标是「<strong>让讲师 30 分钟开出一门课</strong>」。与后台管理端分离部署，界面更聚焦、更轻量。</p>
+
+      <h4>6.2.1 入驻与认证</h4>
+      <ul>
+        <li>讲师入驻申请：实名认证（身份证）、学术资质认证（学历/职称/任职机构/代表作）、人脸核身。</li>
+        <li>签约协议在线签署、结算账户绑定、分成比例确认。</li>
+        <li>审核进度查询与驳回原因说明。</li>
+      </ul>
+
+      <h4>6.2.2 课程创建与管理</h4>
+      <table>
+        <thead><tr><th>能力</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">内容形态</td><td>录播视频、音频、图文、PDF/资料包、直播、专栏、训练营</td></tr>
+          <tr><td class="td-pri">课程结构</td><td>课程 → 章节 → 课时；支持试看、免费课时、章节目录拖拽排序</td></tr>
+          <tr><td class="td-pri">素材上传</td><td>视频/音频拖拽上传、断点续传、转码进度、封面裁剪、字幕上传</td></tr>
+          <tr><td class="td-pri">定价策略</td><td>一口价、划线价、会员价、拼团价、限时折扣、优惠券叠加规则</td></tr>
+          <tr><td class="td-pri">售卖设置</td><td>上架时间、限购、有效期（永久/固定天数）、是否支持分销</td></tr>
+          <tr><td class="td-pri">作业与考试</td><td>作业布置、题库组卷、自动判分、主观题人工批改</td></tr>
+          <tr><td class="td-pri">提交审核</td><td>提交平台审核、查看审核意见、修改后重新提交</td></tr>
+        </tbody>
+      </table>
+
+      <h4>6.2.3 直播与教务</h4>
+      <ul>
+        <li><strong>开播工具：</strong>浏览器开播（摄像头/屏幕共享/PPT 演示）+ 推流码开播（OBS）。</li>
+        <li><strong>班级管理：</strong>建班、招生、分班、学员名单、考勤、进度跟踪。</li>
+        <li><strong>作业批改：</strong>收作业、批改、评分、点评、优秀作业展示。</li>
+        <li><strong>答疑：</strong>课程问答、圈子答疑、私信回复。</li>
+        <li><strong>通知：</strong>向班级/学员群发通知、开课提醒。</li>
+      </ul>
+
+      <h4>6.2.4 数据与收益</h4>
+      <ul>
+        <li>课程数据：曝光、详情访客、下单转化、销量、营收、完课率、评分。</li>
+        <li>学员数据：新增学员、地域分布、学习时长、活跃度。</li>
+        <li>收益中心：可提现余额、累计收益、结算明细、提现申请、分成账单。</li>
+        <li>分销管理：我的推广员、佣金比例、佣金明细。</li>
+      </ul>
+
+      <!-- 6.3 -->
+      <h3 class="sub" id="s6-3"><span class="dot"></span>6.3 用户小程序端（微信生态 · 轻触达）</h3>
+      <p>依托微信生态，承担「<strong>裂变获客 + 快速购买 + 碎片化学习</strong>」职责。基于微信小程序原生或 uni-app 开发。</p>
+      <table>
+        <thead><tr><th>模块</th><th>功能点</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">首页</td><td>推荐位轮播、学科分类、热门课程、直播预告、学习位、个性化推荐</td></tr>
+          <tr><td class="td-pri">发现 / 分类</td><td>类目导航、筛选排序（销量/价格/最新）、搜索建议、搜索历史</td></tr>
+          <tr><td class="td-pri">课程详情</td><td>课程介绍、大纲、讲师介绍、试看、评价、常见问题、购买/加入学习</td></tr>
+          <tr><td class="td-pri">学习中心</td><td>我的课程、学习进度、继续学习、下载（离线看）、笔记、打卡</td></tr>
+          <tr><td class="td-pri">直播</td><td>直播列表、预约提醒、直播间（弹幕/点赞/打赏/问答）、回放</td></tr>
+          <tr><td class="td-pri">圈子</td><td>加入圈子、发帖、问答、打卡、资料下载、成员互动</td></tr>
+          <tr><td class="td-pri">交易</td><td>购物车、下单、微信支付、订单列表、退款申请、优惠券、发票</td></tr>
+          <tr><td class="td-pri">我的</td><td>个人资料、会员卡、积分、优惠券、分销中心、我的订单、设置</td></tr>
+          <tr><td class="td-pri">裂变</td><td>分享海报、邀请有礼、拼团开团、助力解锁、分销推广</td></tr>
+          <tr><td class="td-pri">微信能力</td><td>一键登录、分享到会话/朋友圈、订阅消息提醒、客服消息、视频号挂载</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 6.4 -->
+      <h3 class="sub" id="s6-4"><span class="dot"></span>6.4 用户 PC / H5 端（浏览器 + 微信内）</h3>
+      <p>覆盖「PC 浏览器大屏」与「微信内 H5」两种场景，共享一套响应式前端。PC 端强化<strong>大屏学习体验与办公场景</strong>。</p>
+      <ul>
+        <li><strong>响应式布局：</strong>PC（≥1200px）、平板（768–1199px）、手机（&lt;768px）三档断点自适应。</li>
+        <li><strong>大屏播放器：</strong>倍速、画质切换、字幕、笔记侧栏、目录联动、画中画、投屏。</li>
+        <li><strong>PC 扫码登录：</strong>展示小程序码，微信扫码即登录，与移动端账号互通。</li>
+        <li><strong>学习工作台：</strong>我的课程、学习计划、笔记、错题本、下载中心。</li>
+        <li><strong>H5 分享：</strong>微信内打开即学，支持分享卡片、小程序跳转引导。</li>
+        <li><strong>支付：</strong>微信 H5 支付、支付宝网页支付（PC 端）。</li>
+      </ul>
+
+      <!-- 6.5 -->
+      <h3 class="sub" id="s6-5"><span class="dot"></span>6.5 用户 APP 端（iOS / Android · 深度学习）</h3>
+      <p>APP 是<strong>深度学习与用户留存的根据地</strong>，承载更完整的学习、社群、直播与消息能力。建议 React Native / Flutter / uni-app 跨端开发，或原生双端。</p>
+      <table>
+        <thead><tr><th>模块</th><th>功能点</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">首页</td><td>个性化推荐、关注讲师动态、学习日历、每日一练</td></tr>
+          <tr><td class="td-pri">播放器</td><td>离线缓存、后台播放（音频）、倍速、音质/画质、定时关闭、投屏、记笔记打点</td></tr>
+          <tr><td class="td-pri">学习</td><td>学习计划、番茄钟、学习报告、每日打卡、学习排行榜</td></tr>
+          <tr><td class="td-pri">直播</td><td>直播预约、进直播间、连麦提问、打赏、回放、直播预约提醒推送</td></tr>
+          <tr><td class="td-pri">社群</td><td>圈子动态、话题、私信 IM、群聊、@提醒</td></tr>
+          <tr><td class="td-pri">推送</td><td>开课提醒、作业提醒、直播提醒、系统通知、营销推送</td></tr>
+          <tr><td class="td-pri">支付</td><td>微信/支付宝支付、Apple 内购（iOS 虚拟商品合规）、余额</td></tr>
+          <tr><td class="td-pri">特色</td><td>搜索、扫码（扫 PC 端二维码登录/领课）、听书模式、护眼模式</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 6.6 -->
+      <h3 class="sub" id="s6-6"><span class="dot"></span>6.6 用户 PC 本地端（Windows / Mac 桌面客户端）</h3>
+      <p>面向<strong>科研人群的离线科研场景</strong>，桌面客户端提供「离线学习 + 资料管理 + 科研工具集成」的差异化能力。建议 Electron / Tauri 开发（跨平台一套代码）。</p>
+      <div class="callout">
+        <span class="ct">为什么需要桌面客户端？</span>
+        学术用户常在无网络或弱网环境（实验室、图书馆、差旅）学习；且需频繁查阅本地资料、做笔记、写论文。桌面端可提供<b>课程内容离线缓存、本地资料库、笔记与文献管理联动</b>，形成 APP / 小程序无法替代的场景。
+      </div>
+      <table>
+        <thead><tr><th>模块</th><th>功能点</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">账号登录</td><td>手机号 / 微信扫码 / 账号密码登录，权益与云端实时同步</td></tr>
+          <tr><td class="td-pri">课程库</td><td>已购课程列表、分类、搜索、更新提醒、一键下载</td></tr>
+          <tr><td class="td-pri">离线播放</td><td>视频/音频加密下载、本地播放、倍速、字幕、笔记、断点续播</td></tr>
+          <tr><td class="td-pri">资料库</td><td>课程配套资料本地管理、标签、收藏、全文检索</td></tr>
+          <tr><td class="td-pri">笔记系统</td><td>富文本/Markdown 笔记、时间戳定位视频、导出 PDF/Word</td></tr>
+          <tr><td class="td-pri">科研工具</td><td>学习计时、文献引用辅助、常用科研网站快捷入口（可选集成）</td></tr>
+          <tr><td class="td-pri">系统能力</td><td>托盘常驻、全局快捷键、开机自启、自动更新、深色模式</td></tr>
+          <tr><td class="td-pri">安全</td><td>设备绑定、离线内容加密（一机一码）、防复制、退出自动清除缓存</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ============ 7 ============ -->
+      <h2 class="sec" id="s7"><span class="num">07</span>核心业务流程</h2>
+      <h3 class="sub"><span class="dot"></span>7.1 课程上架流程</h3>
+      <div class="flow">
+        <span class="step k">讲师入驻认证</span><span class="ar">→</span>
+        <span class="step">创建课程</span><span class="ar">→</span>
+        <span class="step">上传内容/设置价格</span><span class="ar">→</span>
+        <span class="step">提交审核</span><span class="ar">→</span>
+        <span class="step k">平台审核</span><span class="ar">→</span>
+        <span class="step">通过上架 / 驳回修改</span><span class="ar">→</span>
+        <span class="step">运营推荐位配置</span>
+      </div>
+      <h3 class="sub"><span class="dot"></span>7.2 购买支付流程</h3>
+      <div class="flow">
+        <span class="step">浏览/搜索</span><span class="ar">→</span>
+        <span class="step">课程详情</span><span class="ar">→</span>
+        <span class="step">加入购物车/立即购买</span><span class="ar">→</span>
+        <span class="step k">选择优惠券/会员价</span><span class="ar">→</span>
+        <span class="step">提交订单</span><span class="ar">→</span>
+        <span class="step k">支付</span><span class="ar">→</span>
+        <span class="step">支付回调</span><span class="ar">→</span>
+        <span class="step">开通权益+消息通知</span>
+      </div>
+      <div class="callout warn"><span class="ct">异常处理</span>支付超时自动关闭订单；支付成功但回调延迟时，提供主动查询补偿；重复支付自动退款；退款走审批工单。</div>
+      <h3 class="sub"><span class="dot"></span>7.3 学习交付流程</h3>
+      <div class="flow">
+        <span class="step">开通学习权限</span><span class="ar">→</span>
+        <span class="step">加入班级/学习计划</span><span class="ar">→</span>
+        <span class="step">观看课时</span><span class="ar">→</span>
+        <span class="step">完成作业</span><span class="ar">→</span>
+        <span class="step k">讲师点评</span><span class="ar">→</span>
+        <span class="step">结业考核</span><span class="ar">→</span>
+        <span class="step">颁发证书</span>
+      </div>
+      <h3 class="sub"><span class="dot"></span>7.4 分销推广流程</h3>
+      <div class="flow">
+        <span class="step">学员申请成为推广员</span><span class="ar">→</span>
+        <span class="step">生成专属海报/链接</span><span class="ar">→</span>
+        <span class="step">好友下单</span><span class="ar">→</span>
+        <span class="step k">订单归因（锁定关系）</span><span class="ar">→</span>
+        <span class="step">佣金入账（T+N）</span><span class="ar">→</span>
+        <span class="step">提现审核</span><span class="ar">→</span>
+        <span class="step">打款</span>
+      </div>
+
+      <!-- ============ 8 ============ -->
+      <h2 class="sec" id="s8"><span class="num">08</span>会员与增长体系</h2>
+      <div class="grid g2">
+        <div class="card"><h5><span class="ic">★</span>超级会员</h5><p>月/季/年/永久卡；权益：精选课程免费学、购课折扣、专属内容、专属客服、优先答疑。<b>设计目的：</b>提高复购与留存，带动长期 LTV。</p></div>
+        <div class="card"><h5><span class="ic">积</span>积分体系</h5><p>学习、打卡、分享、邀请、评价获得积分；积分兑课、兑券、兑实物。<b>设计目的：</b>引导高频行为，形成「学习-奖励-复购」闭环。</p></div>
+        <div class="card"><h5><span class="ic">★</span>成长等级</h5><p>成长值由学习时长、完课数、互动累积；等级解锁专属权益与身份标识。<b>设计目的：</b>荣誉感与身份认同。</p></div>
+        <div class="card"><h5><span class="ic">社</span>社群裂变</h5><p>邀请有礼、助力解锁、拼团、任务宝、海报分销。<b>设计目的：</b>低成本获客，社交关系链传播。</p></div>
+      </div>
+
+      <!-- ============ 9 ============ -->
+      <h2 class="sec" id="s9"><span class="num">09</span>技术架构建议</h2>
+      <table>
+        <thead><tr><th>层级</th><th>技术选型建议</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">管理后台</td><td>Vue3 / React + Ant Design Pro</td><td>组件丰富、适合中后台</td></tr>
+          <tr><td class="td-pri">讲师工作台</td><td>React + Ant Design</td><td>与后台复用组件库</td></tr>
+          <tr><td class="td-pri">小程序</td><td>微信原生 / uni-app</td><td>保留原生体验，或复用多端</td></tr>
+          <tr><td class="td-pri">PC/H5</td><td>Next.js / Nuxt（SSR 利于 SEO）</td><td>课程页 SEO 引流</td></tr>
+          <tr><td class="td-pri">APP</td><td>Flutter / React Native</td><td>一套代码双端，或原生双端</td></tr>
+          <tr><td class="td-pri">桌面客户端</td><td>Tauri（推荐）/ Electron</td><td>Tauri 体积小、性能好、省内存</td></tr>
+          <tr><td class="td-pri">后端</td><td>Java（Spring Cloud）/ Go / Node.js</td><td>微服务拆分：用户/课程/交易/营销/学习/直播</td></tr>
+          <tr><td class="td-pri">数据库</td><td>MySQL + Redis + MongoDB + ES</td><td>ES 做课程与内容搜索</td></tr>
+          <tr><td class="td-pri">音视频</td><td>腾讯云 VOD + 直播 + CDN + DRM</td><td>点播转码、直播低延迟、防盗链</td></tr>
+          <tr><td class="td-pri">存储</td><td>对象存储 OSS / COS</td><td>素材、资料、图片</td></tr>
+          <tr><td class="td-pri">消息</td><td>IM SDK + 推送 + 短信 + 模板消息</td><td>全端消息触达</td></tr>
+          <tr><td class="td-pri">数据</td><td>埋点 SDK + 数仓 + BI</td><td>用户行为分析、经营看板</td></tr>
+          <tr><td class="td-pri">AI 能力</td><td>大模型接入（答疑/出题/摘要/推荐）</td><td>AI 助教、智能推荐、内容摘要</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ============ 10 ============ -->
+      <h2 class="sec" id="s10"><span class="num">10</span>内容安全与合规</h2>
+      <ul>
+        <li><strong>资质合规：</strong>ICP 备案、增值电信业务经营许可证（ICP 许可）、网络文化经营许可证（如需）、广播电视节目制作许可（如涉自制视频）。</li>
+        <li><strong>内容审核：</strong>接入内容安全能力，机审 + 人审双保险，覆盖文本、图片、音视频、评论。</li>
+        <li><strong>知识产权：</strong>讲师上传内容需承诺原创/已获授权；平台对盗版内容快速下架处理（通知-删除机制）。</li>
+        <li><strong>用户协议：</strong>用户服务协议、隐私政策、未成年人保护、退费规则公示。</li>
+        <li><strong>数据合规：</strong>个人信息保护法（PIPL）合规，明示收集范围、获取授权、支持注销与数据导出。</li>
+        <li><strong>支付合规：</strong>iOS 虚拟商品走 Apple 内购；微信/支付宝商户资质齐全。</li>
+        <li><strong>版权保护：</strong>视频动态水印（用户 ID + 时间）、防盗链、下载加密、离线内容一机一码。</li>
+      </ul>
+
+      <!-- ============ 11 ============ -->
+      <h2 class="sec" id="s11"><span class="num">11</span>非功能需求</h2>
+      <table>
+        <thead><tr><th>维度</th><th>指标要求</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">性能</td><td>页面首屏 &lt; 1.5s（PC）、&lt; 2s（小程序/APP）；接口 P95 &lt; 300ms；视频起播 &lt; 1s</td></tr>
+          <tr><td class="td-pri">并发</td><td>支持直播场景 10 万级并发在线；秒杀场景 QPS ≥ 5000</td></tr>
+          <tr><td class="td-pri">可用性</td><td>核心服务可用性 ≥ 99.9%，多可用区容灾、自动故障转移</td></tr>
+          <tr><td class="td-pri">安全</td><td>HTTPS 全站加密、敏感数据脱敏、防 SQL 注入/XSS/CSRF、风控防刷</td></tr>
+          <tr><td class="td-pri">扩展性</td><td>服务无状态化、水平扩缩容、灰度发布</td></tr>
+          <tr><td class="td-pri">兼容性</td><td>PC 端兼容 Chrome/Edge/Safari 主流版本；小程序兼容微信 8.0+；桌面端兼容 Win10+/macOS 11+</td></tr>
+          <tr><td class="td-pri">可维护性</td><td>日志集中采集、链路追踪、告警监控、埋点规范统一</td></tr>
+        </tbody>
+      </table>
+
+      <!-- ============ 12 ============ -->
+      <h2 class="sec" id="s12"><span class="num">12</span>版本规划 Roadmap</h2>
+      <table>
+        <thead><tr><th>阶段</th><th>目标</th><th>核心交付</th><th>端</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="td-pri">V1.0<br>MVP</td>
+            <td>跑通「建课-卖课-学习」最小闭环</td>
+            <td>讲师入驻建课、课程上架审核、订单支付、录播学习、基础后台</td>
+            <td>后台 + 讲师端 + 小程序 + H5</td>
+          </tr>
+          <tr>
+            <td class="td-pri">V1.5</td>
+            <td>补齐交易与营销能力</td>
+            <td>优惠券、拼团、分销、会员卡、积分、订单退款、数据看板</td>
+            <td>全 Web + 小程序</td>
+          </tr>
+          <tr>
+            <td class="td-pri">V2.0</td>
+            <td>直播 + 训练营强交付</td>
+            <td>直播互动、回放、训练营班级制、作业批改、结业证书、圈子社群</td>
+            <td>+ APP 端</td>
+          </tr>
+          <tr>
+            <td class="td-pri">V2.5</td>
+            <td>科研场景深化</td>
+            <td>桌面客户端（离线学习/资料库/笔记）、AI 助教、文献工具集成</td>
+            <td>+ Windows/Mac 客户端</td>
+          </tr>
+          <tr>
+            <td class="td-pri">V3.0</td>
+            <td>机构与生态</td>
+            <td>机构采购、企业培训、会议配套、开放平台 API、智能推荐</td>
+            <td>全端</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ============ 13 ============ -->
+      <h2 class="sec" id="s13"><span class="num">13</span>附录：核心数据字典（节选）</h2>
+      <h3 class="sub"><span class="dot"></span>13.1 课程（Course）</h3>
+      <table>
+        <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>course_id</td><td>bigint</td><td>课程主键</td></tr>
+          <tr><td>title</td><td>varchar(120)</td><td>课程标题</td></tr>
+          <tr><td>type</td><td>tinyint</td><td>1 录播 2 音频 3 图文 4 专栏 5 训练营 6 直播</td></tr>
+          <tr><td>lecturer_id</td><td>bigint</td><td>讲师 ID</td></tr>
+          <tr><td>category_id</td><td>int</td><td>所属类目</td></tr>
+          <tr><td>price</td><td>decimal(10,2)</td><td>售价（元）</td></tr>
+          <tr><td>status</td><td>tinyint</td><td>0 草稿 1 待审核 2 已上架 3 已下架 4 驳回</td></tr>
+          <tr><td>valid_days</td><td>int</td><td>有效期天数，0 表示永久</td></tr>
+        </tbody>
+      </table>
+      <h3 class="sub"><span class="dot"></span>13.2 订单（Order）</h3>
+      <table>
+        <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>order_no</td><td>varchar(32)</td><td>订单号</td></tr>
+          <tr><td>user_id</td><td>bigint</td><td>下单用户</td></tr>
+          <tr><td>amount</td><td>decimal(10,2)</td><td>应付金额</td></tr>
+          <tr><td>pay_amount</td><td>decimal(10,2)</td><td>实付金额</td></tr>
+          <tr><td>coupon_id</td><td>bigint</td><td>使用的优惠券</td></tr>
+          <tr><td>pay_channel</td><td>tinyint</td><td>1 微信 2 支付宝 3 Apple 4 余额 5 兑换码</td></tr>
+          <tr><td>status</td><td>tinyint</td><td>0 待支付 1 已支付 2 已完成 3 已退款 4 已关闭</td></tr>
+          <tr><td>distributor_id</td><td>bigint</td><td>归因的推广员 ID</td></tr>
+        </tbody>
+      </table>
+
+      <footer>
+        <span>研脉学术知识付费平台 · 产品功能文档 v1.0</span>
+        <span>研脉学术（北京）智能科技有限公司 · 内部资料</span>
+      </footer>
+    </div>
+  </main>
+</div>
+<script>
+  // 滚动进度条
+  var prog = document.getElementById('prog');
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement;
+    var p = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+    prog.style.width = p + '%';
+  });
+  // 目录高亮
+  var links = document.querySelectorAll('#nav a');
+  var secs = [];
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if(el) secs.push({el:el, a:a});
+  });
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY + 120, cur = null;
+    secs.forEach(function(s){ if(s.el.offsetTop <= y) cur = s; });
+    links.forEach(function(a){ a.classList.remove('active'); });
+    if(cur) cur.a.classList.add('active');
+  });
+</script>
+</body>
+</html>

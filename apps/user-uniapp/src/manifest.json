@@ -1,0 +1,26 @@
+{
+  "name": "研脉学术",
+  "appid": "",
+  "description": "面向学术科研人群的知识付费与在线学习平台",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "vueVersion": "3",
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true,
+      "postcss": true
+    },
+    "usingComponents": true
+  },
+  "h5": {
+    "title": "研脉学术",
+    "router": {
+      "mode": "hash",
+      "base": "./"
+    }
+  }
+}

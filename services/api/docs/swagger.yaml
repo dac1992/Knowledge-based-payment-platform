@@ -1,0 +1,453 @@
+basePath: /api/v1
+definitions:
+  github_com_yanmai_api_internal_modules_user.Profile:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      lastLoginAt:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+  github_com_yanmai_api_pkg_httpx.Envelope:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+      traceId:
+        type: string
+    type: object
+  github_com_yanmai_api_pkg_httpx.PageEnvelope:
+    properties:
+      list: {}
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_modules_auth.LoginRequest:
+    properties:
+      login:
+        maxLength: 64
+        minLength: 3
+        type: string
+      password:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  internal_modules_auth.RefreshRequest:
+    properties:
+      refreshToken:
+        type: string
+    required:
+    - refreshToken
+    type: object
+  internal_modules_auth.RegisterRequest:
+    properties:
+      email:
+        maxLength: 128
+        type: string
+      nickname:
+        maxLength: 32
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+      phone:
+        maxLength: 20
+        type: string
+      username:
+        maxLength: 32
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  internal_modules_auth.TokenResponse:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      refreshToken:
+        type: string
+      tokenType:
+        type: string
+      user:
+        $ref: '#/definitions/github_com_yanmai_api_internal_modules_user.Profile'
+    type: object
+  internal_modules_user.Profile:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      lastLoginAt:
+        type: string
+      nickname:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+      status:
+        type: integer
+      username:
+        type: string
+    type: object
+  internal_modules_user.UpdateProfileRequest:
+    properties:
+      avatar:
+        maxLength: 512
+        type: string
+      email:
+        maxLength: 128
+        type: string
+      nickname:
+        maxLength: 32
+        minLength: 1
+        type: string
+      phone:
+        maxLength: 20
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Phase 1 工程骨架接口。所有响应统一为 `{ code, message, data, traceId }`，`code` 为
+    0 表示成功。
+  title: 研脉学术知识付费平台 API
+  version: 0.1.0
+paths:
+  /admin/users:
+    get:
+      description: 仅管理员可访问，支持关键字、角色、状态筛选
+      parameters:
+      - default: 1
+        description: 页码，从 1 开始
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: 每页条数，1-100
+        in: query
+        name: pageSize
+        type: integer
+      - description: 登录名 / 昵称 / 手机号 模糊匹配
+        in: query
+        name: keyword
+        type: string
+      - description: 角色
+        enum:
+        - admin
+        - lecturer
+        - student
+        in: query
+        name: role
+        type: string
+      - description: 状态
+        enum:
+        - 0
+        - 1
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.PageEnvelope'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      security:
+      - BearerAuth: []
+      summary: 用户列表（分页）
+      tags:
+      - admin-user
+  /admin/users/{id}:
+    get:
+      parameters:
+      - description: 用户 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_user.Profile'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      security:
+      - BearerAuth: []
+      summary: 用户详情
+      tags:
+      - admin-user
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 支持使用登录名或手机号登录，返回 Access + Refresh 双 Token
+      parameters:
+      - description: 登录参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_auth.TokenResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "401":
+          description: 账号或密码不正确
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "403":
+          description: 账号被禁用
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      summary: 登录
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      description: Phase 1 为无状态登出，由客户端丢弃令牌；服务端黑名单在 Phase 2 引入 Redis 后实现
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      security:
+      - BearerAuth: []
+      summary: 登出
+      tags:
+      - auth
+  /auth/me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      security:
+      - BearerAuth: []
+      summary: 当前登录账号
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: 用 Refresh Token 换取新的令牌对；会回源校验账号仍存在且可用
+      parameters:
+      - description: 刷新参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_auth.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_auth.TokenResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      summary: 刷新令牌
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 创建学员账号并直接返回登录态（Access + Refresh 双 Token）
+      parameters:
+      - description: 注册参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_auth.TokenResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      summary: 注册
+      tags:
+      - auth
+  /users/me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_user.Profile'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      security:
+      - BearerAuth: []
+      summary: 当前用户资料
+      tags:
+      - user
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: 待修改字段，未传的字段保持不变
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_modules_user.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+            - properties:
+                data:
+                  $ref: '#/definitions/internal_modules_user.Profile'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+        "409":
+          description: 手机号已被占用
+          schema:
+            $ref: '#/definitions/github_com_yanmai_api_pkg_httpx.Envelope'
+      security:
+      - BearerAuth: []
+      summary: 修改个人资料
+      tags:
+      - user
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: 形如 `Bearer <access_token>`
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

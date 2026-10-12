@@ -1,0 +1,39 @@
+/**
+ * 覆盖 Element Plus 主题变量，使管理后台 / 讲师端与品牌色一致。
+ * 需在 element-plus/dist/index.css 之后引入。
+ */
+:root {
+  --el-color-primary: #1a56db;
+  --el-color-primary-light-3: #4f7fe6;
+  --el-color-primary-light-5: #7da1ee;
+  --el-color-primary-light-7: #aec3f4;
+  --el-color-primary-light-8: #c6d5f8;
+  --el-color-primary-light-9: #ebf1fe;
+  --el-color-primary-dark-2: #0e3a99;
+
+  --el-color-success: #16a34a;
+  --el-color-warning: #d97706;
+  --el-color-danger: #dc2626;
+  --el-color-error: #dc2626;
+  --el-color-info: #6b7688;
+
+  --el-text-color-primary: #1a1f2b;
+  --el-text-color-regular: #3d4759;
+  --el-text-color-secondary: #6b7688;
+  --el-text-color-placeholder: #98a2b3;
+
+  --el-border-color: #e4e8ef;
+  --el-border-color-light: #eef1f6;
+  --el-fill-color-blank: #ffffff;
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: #f4f6fa;
+
+  --el-border-radius-base: 8px;
+  --el-font-family: var(--ym-font-sans);
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}

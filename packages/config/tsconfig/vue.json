@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./base.json",
+  "compilerOptions": {
+    // 注意：这里刻意不声明 `types`。
+    // `vue.json` 同时被「应用」（apps/*）与「库」（packages/*）复用，
+    // 而 `vite/client` 只有应用才需要（import.meta.env / 静态资源导入）。
+    // 应用在自己的 tsconfig 里显式声明 types（如 ["vite/client", "node"]），
+    // 库包则保持默认，避免为了一个类型声明去安装整个 vite。
+    "jsx": "preserve",
+    "jsxImportSource": "vue"
+  }
+}

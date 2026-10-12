@@ -1,0 +1,47 @@
+/**
+ * 研脉学术知识付费平台 · 设计令牌
+ * 与《UI 设计规范》保持一致，供各端统一引用。
+ */
+:root {
+  /* 品牌 */
+  --ym-primary: #1a56db;
+  --ym-primary-dark: #0e3a99;
+  --ym-primary-light: #ebf1fe;
+  --ym-accent: #c9a227;
+  --ym-accent-light: #fbf4df;
+
+  /* 文本 */
+  --ym-ink: #1a1f2b;
+  --ym-ink-2: #3d4759;
+  --ym-ink-3: #6b7688;
+  --ym-ink-4: #98a2b3;
+
+  /* 面 */
+  --ym-line: #e4e8ef;
+  --ym-line-light: #eef1f6;
+  --ym-bg: #f4f6fa;
+  --ym-card: #ffffff;
+
+  /* 语义（遵守国内习惯：红涨绿跌） */
+  --ym-up: #dc2626;
+  --ym-up-bg: #fdecec;
+  --ym-down: #16a34a;
+  --ym-down-bg: #e9f8ef;
+  --ym-warn: #d97706;
+  --ym-warn-bg: #fef5e7;
+  --ym-info: #2563eb;
+  --ym-info-bg: #ebf1fe;
+
+  /* 形状 */
+  --ym-radius-sm: 6px;
+  --ym-radius: 10px;
+  --ym-radius-lg: 14px;
+
+  /* 阴影 */
+  --ym-shadow-sm: 0 1px 2px rgba(26, 31, 43, 0.06);
+  --ym-shadow: 0 4px 16px rgba(26, 31, 43, 0.08);
+
+  /* 排版 */
+  --ym-font-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Segoe UI', Roboto, sans-serif;
+  --ym-font-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+}

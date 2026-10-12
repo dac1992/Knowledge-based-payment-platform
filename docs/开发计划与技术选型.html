@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>研脉学术知识付费平台 · 开发计划与技术选型 v1.1（栈已锁定）</title>
+<style>
+  :root{
+    --primary:#1A56DB; --primary-dark:#0E3A99; --primary-light:#EBF1FE;
+    --accent:#C9A227; --accent-light:#FBF4DF;
+    --ink:#1A1F2B; --ink-2:#3D4759; --ink-3:#6B7688; --ink-4:#98A2B3;
+    --line:#E4E8EF; --line-2:#EEF1F6; --bg:#F4F6FA; --card:#FFFFFF;
+    --ok:#16A34A; --ok-bg:#E9F8EF; --warn:#D97706; --warn-bg:#FEF5E7;
+    --err:#DC2626; --err-bg:#FDECEC; --info:#2563EB; --info-bg:#EBF1FE;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.78;font-size:15px;-webkit-font-smoothing:antialiased;}
+  .layout{display:flex;max-width:1440px;margin:0 auto;align-items:flex-start;}
+  .sidebar{width:290px;flex:none;position:sticky;top:0;height:100vh;overflow-y:auto;
+    padding:28px 20px 60px;background:#0F1A2E;color:#C7D2E4;}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;
+    color:#fff;font-weight:700;font-size:15px;background:linear-gradient(135deg,#2E6BFF,#1A56DB);}
+  .brand b{color:#fff;font-size:15px;display:block;}
+  .brand span{font-size:11px;color:#7C8CAA;}
+  .doc-title{font-size:12px;color:#8C9BB8;margin:16px 0 14px;padding-top:14px;border-top:1px solid #22304A;}
+  .sidebar nav a{display:block;padding:7px 12px;font-size:13.5px;color:#AEBBD0;text-decoration:none;
+    border-radius:7px;margin-bottom:2px;border-left:2px solid transparent;transition:.16s;}
+  .sidebar nav a:hover{background:#1A2942;color:#fff;}
+  .sidebar nav a.l2{padding-left:24px;font-size:12.5px;color:#8E9DB8;}
+  .sidebar nav a.active{background:#1A2942;color:#fff;border-left-color:var(--accent);}
+  .main{flex:1;min-width:0;padding:40px 48px 100px;}
+  .doc{max-width:1010px;}
+  header.cover{background:linear-gradient(135deg,#0A2A6B 0%,#1A56DB 58%,#2E6BFF 100%);color:#fff;
+    border-radius:16px;padding:44px;position:relative;overflow:hidden;box-shadow:0 18px 40px -18px rgba(26,86,219,.55);}
+  header.cover::after{content:"";position:absolute;right:-50px;top:-60px;width:280px;height:280px;
+    background:radial-gradient(circle,rgba(201,162,39,.32),transparent 68%);border-radius:50%;}
+  header.cover .eyebrow{font-size:12.5px;letter-spacing:3px;color:#BBD0FF;font-weight:600;}
+  header.cover h1{font-size:31px;line-height:1.3;margin:12px 0 8px;font-weight:800;}
+  header.cover .sub{font-size:15px;color:#D6E2FF;max-width:660px;}
+  header.cover .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
+  header.cover .meta span{font-size:12.5px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    padding:5px 13px;border-radius:20px;}
+  h2.sec{font-size:23px;margin:54px 0 20px;padding-left:16px;position:relative;font-weight:800;}
+  h2.sec::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:5px;border-radius:3px;
+    background:linear-gradient(180deg,var(--primary),var(--accent));}
+  h2.sec .num{color:var(--primary);font-size:15px;font-weight:700;margin-right:8px;opacity:.7;}
+  h3.sub{font-size:17.5px;margin:32px 0 12px;font-weight:700;padding-bottom:7px;border-bottom:1px solid var(--line-2);}
+  h3.sub .dot{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--primary);margin-right:9px;
+    transform:rotate(45deg) translateY(-1px);}
+  h4{font-size:15px;margin:20px 0 8px;font-weight:700;color:var(--primary-dark);}
+  p{margin:10px 0;color:var(--ink-2);}
+  ul,ol{margin:10px 0 10px 4px;padding-left:22px;color:var(--ink-2);}
+  li{margin:5px 0;} li::marker{color:var(--primary);}
+  strong{color:var(--ink);font-weight:700;}
+  code{background:#EEF1F6;color:#0E3A99;padding:1px 6px;border-radius:5px;font-size:13px;
+    font-family:"JetBrains Mono",Consolas,Monaco,monospace;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px;background:#fff;border-radius:var(--radius);
+    overflow:hidden;box-shadow:0 1px 2px rgba(16,30,54,.06),0 0 0 1px var(--line);}
+  th{background:#F2F5FB;text-align:left;padding:11px 14px;font-weight:700;font-size:13px;border-bottom:1px solid var(--line);}
+  td{padding:10px 14px;border-bottom:1px solid var(--line-2);color:var(--ink-2);vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#FAFBFE;}
+  tbody tr:hover{background:#F4F8FF;}
+  .td-pri{font-weight:700;color:var(--ink);white-space:nowrap;}
+  .callout{border-radius:var(--radius);padding:14px 18px;margin:16px 0;font-size:13.8px;border-left:4px solid var(--primary);
+    background:var(--info-bg);color:var(--ink-2);}
+  .callout.tip{border-color:var(--ok);background:var(--ok-bg);}
+  .callout.warn{border-color:var(--warn);background:var(--warn-bg);}
+  .callout.err{border-color:var(--err);background:var(--err-bg);}
+  .callout .ct{display:block;font-weight:800;color:var(--ink);margin-bottom:3px;font-size:13.5px;}
+  .tag{display:inline-block;font-size:11.5px;padding:2px 9px;border-radius:20px;font-weight:600;line-height:1.6;}
+  .tag.core{background:#E9F8EF;color:#15803D;}
+  .tag.rec{background:var(--accent-light);color:#8A6D12;}
+  .tag.alt{background:#EEF1F6;color:#4B5563;}
+  .tag.later{background:#FEF5E7;color:#B45309;}
+  .tag.lock{background:#E9F8EF;color:#15803D;}
+  .grid{display:grid;gap:14px;margin:18px 0;}
+  .grid.g2{grid-template-columns:repeat(2,1fr);}
+  .grid.g3{grid-template-columns:repeat(3,1fr);}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;
+    box-shadow:0 1px 2px rgba(16,30,54,.05);}
+  .card h5{font-size:14.5px;margin-bottom:6px;color:var(--ink);display:flex;align-items:center;gap:8px;}
+  .card h5 .ic{width:26px;height:26px;border-radius:7px;background:var(--primary-light);color:var(--primary);
+    display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;font-weight:800;}
+  .card p{font-size:13.2px;margin:4px 0;color:var(--ink-3);}
+  .pipe{display:flex;flex-direction:column;gap:0;margin:18px 0;}
+  .pipe .pnode{display:flex;gap:14px;align-items:flex-start;position:relative;padding-bottom:16px;}
+  .pipe .pnode:last-child{padding-bottom:0;}
+  .pipe .pdot{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:800;background:var(--primary-light);color:var(--primary);z-index:1;}
+  .pipe .pline{position:absolute;left:15px;top:30px;bottom:0;width:2px;background:var(--line);}
+  .pipe .pnode:last-child .pline{display:none;}
+  .pipe .pbody{flex:1;}
+  .pipe .pbody b{font-size:14.5px;display:block;color:var(--ink);}
+  .pipe .pbody p{font-size:13px;margin:3px 0;color:var(--ink-3);}
+  .arch{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:18px 0;
+    box-shadow:0 1px 2px rgba(16,30,54,.05);}
+  .arch-layer{margin-bottom:12px;}
+  .arch-layer .lbl{font-size:11px;font-weight:700;color:var(--ink-4);letter-spacing:1px;margin-bottom:6px;}
+  .arch-row{display:flex;gap:9px;flex-wrap:wrap;}
+  .arch-node{flex:1;min-width:106px;text-align:center;padding:11px 8px;border-radius:8px;font-size:12.5px;font-weight:600;
+    background:#F2F5FB;color:var(--ink-2);border:1px solid var(--line);}
+  .arch-node.hi{background:linear-gradient(135deg,#1A56DB,#3B7BFF);color:#fff;border-color:transparent;
+    box-shadow:0 6px 16px -8px rgba(26,86,219,.7);}
+  .arch-node.acc{background:var(--accent-light);color:#8A6D12;border-color:#EADCB0;}
+  .arch-node.go{background:linear-gradient(135deg,#00ADD8,#00759C);color:#fff;border-color:transparent;}
+  .arch-node small{display:block;font-weight:400;font-size:10.5px;opacity:.82;margin-top:2px;}
+  pre.tree{background:#0F1A2E;color:#C7D2E4;border-radius:var(--radius);padding:20px 22px;overflow-x:auto;
+    font-size:12.8px;line-height:1.75;font-family:"JetBrains Mono",Consolas,monospace;margin:16px 0;}
+  pre.tree .c1{color:#7DD3FC;} pre.tree .c2{color:#FDE68A;} pre.tree .c3{color:#86EFAC;} pre.tree .cm{color:#64748B;}
+  .check{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:6px 20px;margin:16px 0;
+    box-shadow:0 1px 2px rgba(16,30,54,.05);}
+  .check li{list-style:none;position:relative;padding-left:26px;margin:9px 0;font-size:13.6px;color:var(--ink-2);}
+  .check li::before{content:"";position:absolute;left:0;top:5px;width:15px;height:15px;border-radius:4px;
+    border:2px solid var(--primary);}
+  .ph{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--primary-dark);
+    background:var(--primary-light);padding:3px 11px;border-radius:20px;}
+  .env{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0;}
+  .env div{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:0 1px 2px rgba(16,30,54,.06),0 0 0 1px var(--line);font-size:12.5px;color:var(--ink-3);}
+  .env b{display:block;color:var(--ink);font-size:13.5px;margin-bottom:3px;}
+  .env .yes{color:var(--ok);font-weight:700;} .env .no{color:var(--err);font-weight:700;}
+  footer{margin-top:70px;padding-top:22px;border-top:1px solid var(--line);color:var(--ink-4);font-size:12.5px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--accent));z-index:99;width:0;}
+  @media (max-width:1080px){.sidebar{display:none;}.main{padding:28px 20px 80px;}
+    .grid.g3,.grid.g2,.env{grid-template-columns:1fr;} header.cover{padding:32px 24px;} header.cover h1{font-size:24px;}}
+  @media print{.sidebar{display:none;}body{background:#fff;}.main{padding:0;}}
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">研</div><div><b>研脉学术</b><span>Dev Plan v1.1</span></div></div>
+    <div class="doc-title">开发计划与技术选型 · v1.1</div>
+    <nav id="nav">
+      <a href="#s0">0. 技术栈已锁定（变更说明）</a>
+      <a href="#s1">1. 核心结论（TL;DR）</a>
+      <a href="#s2">2. 开发方法论</a>
+      <a href="#s2-1" class="l2">2.1 骨架先行</a>
+      <a href="#s2-2" class="l2">2.2 垂直切片</a>
+      <a href="#s2-3" class="l2">2.3 确认门禁机制</a>
+      <a href="#s3">3. 技术选型总览（锁定）</a>
+      <a href="#s4">4. 后端架构（Go + Gin）</a>
+      <a href="#s5">5. 前端技术栈（Vue 全家桶 + uni-app）</a>
+      <a href="#s6">6. 云托管与基础设施</a>
+      <a href="#s7">7. 工程规范</a>
+      <a href="#s8">8. 仓库目录结构</a>
+      <a href="#s9">9. 阶段规划与里程碑</a>
+      <a href="#s10">10. 完整度定义（DoD）</a>
+      <a href="#s11">11. 风险与应对</a>
+      <a href="#s12">12. 下一步</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="doc">
+      <header class="cover">
+        <div class="eyebrow">DEVELOPMENT PLAN v1.1 · TECH STACK LOCKED</div>
+        <h1>研脉学术知识付费平台<br>开发计划与技术选型</h1>
+        <div class="sub">技术栈已按你的决策锁定：<b>Go + Gin</b> 后端 · <b>Vue3 + uni-app</b> 前端 · <b>云托管</b>基础设施 · 首批三端跑通闭环。<br>方法不变：骨架先行 → 垂直切片 → 逐步验收。</div>
+        <div class="meta">
+          <span>版本 v1.1（栈已锁定）</span>
+          <span>后端 Go + Gin</span>
+          <span>前端 Vue3 + uni-app</span>
+          <span>基础设施 云托管</span>
+          <span>更新：2026-10-12</span>
+        </div>
+      </header>
+
+      <!-- 0 -->
+      <h2 class="sec" id="s0"><span class="num">00</span>技术栈已锁定（变更说明）</h2>
+      <p>根据你的决策，技术栈从 v1.0 的推荐方案调整为以下组合。<b>所有变更点如下</b>，请核对：</p>
+      <table>
+        <thead><tr><th>决策项</th><th>你的选择</th><th>连带影响 / 说明</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="td-pri">后端技术栈</td>
+            <td><b>Go + Gin</b></td>
+            <td>ORM 用 GORM，迁移用 golang-migrate，配置用 Viper，日志用 zap，DI 用 wire，文档用 swaggo。前端不再与其共享类型，改为由 OpenAPI 自动生成 TS SDK。</td>
+          </tr>
+          <tr>
+            <td class="td-pri">移动端方案</td>
+            <td><b>uni-app（Vue 一套多端）</b></td>
+            <td>⚠️ <b>关键连带影响：</b>uni-app 是 Vue 生态，因此<b>管理后台与讲师端的推荐技术栈同步改为 Vue3 + Element Plus</b>（原文档的 React + Ant Design 作废），保证全前端一套语言、一套组件心智。</td>
+          </tr>
+          <tr>
+            <td class="td-pri">基础设施</td>
+            <td><b>云托管</b></td>
+            <td>不再使用 Docker 自建 PG/Redis。改为云端托管 PostgreSQL + Redis + 对象存储。本地开发直连云端开发库（本机无 Docker，正好一致）。</td>
+          </tr>
+          <tr>
+            <td class="td-pri">首批开发端</td>
+            <td><b>三端跑通闭环</b></td>
+            <td>管理后台 + 讲师端 + 用户小程序（uni-app 一套码同时产出小程序与 H5）。PC/APP/桌面端后置到 Phase 13。</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3 class="sub"><span class="dot"></span>0.1 本机环境实测结果</h3>
+      <div class="env">
+        <div><b>Go</b><span class="yes">✓ 1.26.3</span><br>注意：为 windows/386（32 位）</div>
+        <div><b>Node.js</b><span class="yes">✓ 22.22.2</span><br>满足 Vite / uni-app 要求</div>
+        <div><b>pnpm</b><span class="yes">✓ 10.30.3</span><br>用于 Monorepo</div>
+        <div><b>Docker</b><span class="no">✗ 未安装</span><br>改用云托管数据库</div>
+      </div>
+      <div class="callout warn">
+        <span class="ct">两点环境提醒</span>
+        ① 你的 Go 是 <b>32 位（windows/386）</b>版本，建议换成 64 位版本（<code>go1.26.x windows-amd64</code>），避免依赖编译与内存限制问题。<br>
+        ② 本机没有 Docker，本地开发数据库需<b>直连云端开发库</b>（这与你选的云托管方案一致），我会在 Phase 1 提供连接配置模板。
+      </div>
+
+      <!-- 1 -->
+      <h2 class="sec" id="s1"><span class="num">01</span>核心结论（TL;DR）</h2>
+      <div class="callout tip">
+        <span class="ct">一句话方案</span>
+        <b>pnpm Monorepo 单仓库</b> + <b>Go/Gin 模块化单体后端</b> + <b>Vue3/Element Plus 中后台</b> + <b>uni-app 移动多端</b> + <b>云托管数据库与存储</b>；
+        用<b>「骨架先行」</b>搭出可运行空壳，再用<b>「垂直切片」</b>按业务域逐个交付（数据库 + API + 界面 + 测试），<b>每片测试通过并经你确认后才进入下一片</b>。
+      </div>
+      <div class="grid g3">
+        <div class="card"><h5><span class="ic">1</span>不一次做完</h5><p>先做「1 后端 + 1 后台 + 1 移动端」，跑通闭环后再扩端。</p></div>
+        <div class="card"><h5><span class="ic">2</span>栈已锁定</h5><p>Go / Vue / uni-app / 云托管已定，全项目复用，避免中途返工。</p></div>
+        <div class="card"><h5><span class="ic">3</span>能跑才能确认</h5><p>每步交付「可运行、可演示、可测试」的东西，而不是半成品。</p></div>
+      </div>
+
+      <!-- 2 -->
+      <h2 class="sec" id="s2"><span class="num">02</span>开发方法论（不变）</h2>
+      <h3 class="sub" id="s2-1"><span class="dot"></span>2.1 骨架先行（Walking Skeleton）</h3>
+      <p>先搭一个<strong>「能从头到尾走通、但业务为空」的最小骨架</strong>：登录页能打开、能调通一个后端接口、能读写数据库、能跑 CI。骨架跑通后，业务功能就像往骨架里「填肉」，风险极低。</p>
+      <div class="callout">
+        <span class="ct">为什么先搭骨架？</span>
+        骨架阶段会暴露所有<b>基础设施级问题</b>（环境、构建、认证、数据库连接、部署链路、跨端通信）。这些问题若拖到业务开发中期才遇到，返工成本极高。<b>骨架是一次性投入，长期受益。</b>
+      </div>
+      <h4>骨架必须打通的全链路</h4>
+      <div class="arch">
+        <div class="arch-layer"><div class="lbl">一次完整请求必须能走通</div>
+          <div class="arch-row">
+            <div class="arch-node hi">Vue 前端<small>登录页</small></div>
+            <div class="arch-node">→</div>
+            <div class="arch-node">HTTP / Nginx<small>反向代理</small></div>
+            <div class="arch-node">→</div>
+            <div class="arch-node go">Gin 路由<small>Handler</small></div>
+            <div class="arch-node">→</div>
+            <div class="arch-node">Service<small>业务逻辑</small></div>
+            <div class="arch-node">→</div>
+            <div class="arch-node go">GORM<small>Repository</small></div>
+            <div class="arch-node">→</div>
+            <div class="arch-node hi">云 PostgreSQL<small>托管</small></div>
+          </div>
+        </div>
+        <div style="text-align:center;color:var(--ink-4);font-size:12.5px;margin-top:6px;">＋ JWT 认证中间件 ＋ 统一响应/异常 ＋ 结构化日志 ＋ 自动化测试 ＋ CI/CD</div>
+      </div>
+
+      <h3 class="sub" id="s2-2"><span class="dot"></span>2.2 垂直切片（Vertical Slice）</h3>
+      <p>放弃「先做完所有数据库 → 再做所有接口 → 再做所有页面」的横向分层，改用垂直切片：<strong>每个功能模块一次性穿透所有层</strong>。</p>
+      <div class="grid g2">
+        <div class="card" style="border-color:#F3C6C6;background:#FFF8F8;">
+          <h5 style="color:var(--err);"><span class="ic" style="background:#FDECEC;color:var(--err);">✕</span>横向分层（不推荐）</h5>
+          <p>第 1 月：所有数据表<br>第 2 月：所有后端接口<br>第 3 月：所有前端页面<br><b style="color:var(--err);">→ 第 3 月末才第一次联调，问题集中爆发</b></p>
+        </div>
+        <div class="card" style="border-color:#B7E4C7;background:#F6FDF9;">
+          <h5 style="color:var(--ok);"><span class="ic" style="background:#E9F8EF;color:var(--ok);">✓</span>垂直切片（推荐）</h5>
+          <p>切片 1：账号认证（表+接口+页面+测试）<br>切片 2：课程内容（表+接口+页面+测试）<br>切片 3：订单支付（表+接口+页面+测试）<br><b style="color:var(--ok);">→ 每 1-2 周一个可用功能，随时可演示验收</b></p>
+        </div>
+      </div>
+      <h4>每个切片的标准动作</h4>
+      <div class="pipe">
+        <div class="pnode"><div class="pline"></div><div class="pdot">1</div><div class="pbody"><b>设计</b><p>确定该切片的表结构、API 契约（OpenAPI）、界面原型</p></div></div>
+        <div class="pnode"><div class="pline"></div><div class="pdot">2</div><div class="pbody"><b>数据库迁移</b><p>golang-migrate SQL 脚本，可回滚</p></div></div>
+        <div class="pnode"><div class="pline"></div><div class="pdot">3</div><div class="pbody"><b>后端实现</b><p>Handler / Service / Repository + DTO 校验 + 单元测试 + 集成测试</p></div></div>
+        <div class="pnode"><div class="pline"></div><div class="pdot">4</div><div class="pbody"><b>前端实现</b><p>页面 + 状态管理 + 联调（按《UI 设计规范》）</p></div></div>
+        <div class="pnode"><div class="pline"></div><div class="pdot">5</div><div class="pbody"><b>测试与验收</b><p>自动化测试全绿 + 手动走查 → 提交验收清单 → <b>你确认</b></p></div></div>
+        <div class="pnode"><div class="pdot" style="background:var(--accent);color:#fff;">✓</div><div class="pbody"><b>冻结并进入下一片</b><p>功能合入主干，锁版本，开发下一个切片</p></div></div>
+      </div>
+
+      <h3 class="sub" id="s2-3"><span class="dot"></span>2.3 确认门禁机制（Checkpoint Gate）</h3>
+      <table>
+        <thead><tr><th>交付物</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">① 可运行成果</td><td>能启动、能点、能演示的项目（你本地能跑起来，不是截图）</td></tr>
+          <tr><td class="td-pri">② 验收清单</td><td>对照本文档「完整度定义」逐项打勾，附测试报告</td></tr>
+          <tr><td class="td-pri">③ 风险与遗留</td><td>如实说明遗留问题、已知限制、下一阶段前置依赖</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn"><span class="ct">门禁规则</span>未通过确认前，<b>不启动下一阶段开发</b>；发现问题即时回修，回修后重新提交验收。绝不「带病前进」。</div>
+
+      <!-- 3 -->
+      <h2 class="sec" id="s3"><span class="num">03</span>技术选型总览（已锁定）</h2>
+      <table>
+        <thead><tr><th>层次</th><th>选型</th><th>状态</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">仓库组织</td><td>pnpm workspace + Turborepo</td><td><span class="tag lock">锁定</span></td><td>前端多端共享；后端 Go 独立在 services/api</td></tr>
+          <tr><td class="td-pri">后端语言/框架</td><td><b>Go 1.26 + Gin</b></td><td><span class="tag lock">锁定</span></td><td>模块化单体，性能与部署优势明显</td></tr>
+          <tr><td class="td-pri">ORM / 迁移</td><td>GORM + golang-migrate</td><td><span class="tag lock">锁定</span></td><td>GORM 做 CRUD，迁移用纯 SQL 保证可控</td></tr>
+          <tr><td class="td-pri">数据库</td><td>PostgreSQL 16（云托管）</td><td><span class="tag lock">锁定</span></td><td>功能强、JSON 好、与云托管兼容</td></tr>
+          <tr><td class="td-pri">缓存 / 队列</td><td>云 Redis + asynq</td><td><span class="tag lock">锁定</span></td><td>缓存、限流、异步任务</td></tr>
+          <tr><td class="td-pri">搜索</td><td>Meilisearch</td><td><span class="tag rec">推荐</span></td><td>轻量中文友好；后期可换 ES</td></tr>
+          <tr><td class="td-pri">管理后台</td><td><b>Vue3 + Vite + Element Plus</b></td><td><span class="tag lock">锁定</span></td><td>与 uni-app 同属 Vue 生态，统一心智</td></tr>
+          <tr><td class="td-pri">讲师工作台</td><td><b>Vue3 + Vite + Element Plus</b></td><td><span class="tag lock">锁定</span></td><td>与后台共享组件，复用率 &gt; 70%</td></tr>
+          <tr><td class="td-pri">小程序 + APP + H5</td><td><b>uni-app (Vue3)</b></td><td><span class="tag lock">锁定</span></td><td>一套代码多端，出活最快</td></tr>
+          <tr><td class="td-pri">用户 PC 端</td><td>Nuxt 3（Vue SSR）</td><td><span class="tag later">后置</span></td><td>SSR 利于课程页 SEO</td></tr>
+          <tr><td class="td-pri">桌面客户端</td><td>Tauri 2 + Vue3</td><td><span class="tag later">后置</span></td><td>体积小，复用 Web 代码</td></tr>
+          <tr><td class="td-pri">接口文档 / SDK</td><td>swaggo 生成 OpenAPI → openapi-typescript 生成 TS SDK</td><td><span class="tag lock">锁定</span></td><td>Go 无类型共享，靠契约生成保证前后端一致</td></tr>
+          <tr><td class="td-pri">云厂商</td><td><b>腾讯云</b>（备选 Supabase）</td><td><span class="tag rec">待最终确认</span></td><td>见第 6 章理由</td></tr>
+          <tr><td class="td-pri">CI/CD</td><td>GitHub Actions</td><td><span class="tag lock">锁定</span></td><td>lint + test + build</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 4 -->
+      <h2 class="sec" id="s4"><span class="num">04</span>后端架构（Go + Gin）</h2>
+      <h3 class="sub"><span class="dot"></span>4.1 技术组件</h3>
+      <table>
+        <thead><tr><th>能力</th><th>选型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">HTTP 框架</td><td>Gin</td><td>路由、中间件、参数绑定，生态最成熟</td></tr>
+          <tr><td class="td-pri">ORM</td><td>GORM v2</td><td>模型定义 + CRUD；复杂查询可写原生 SQL</td></tr>
+          <tr><td class="td-pri">数据库迁移</td><td>golang-migrate</td><td>纯 SQL 迁移脚本，版本化、可回滚</td></tr>
+          <tr><td class="td-pri">配置管理</td><td>Viper</td><td>env / yaml / 配置中心多来源</td></tr>
+          <tr><td class="td-pri">依赖注入</td><td>google/wire</td><td>编译期 DI，模块解耦，便于测试与拆分</td></tr>
+          <tr><td class="td-pri">参数校验</td><td>go-playground/validator</td><td>DTO 结构体标签校验</td></tr>
+          <tr><td class="td-pri">认证</td><td>golang-jwt/jwt</td><td>Access + Refresh 双 Token</td></tr>
+          <tr><td class="td-pri">日志</td><td>uber-go/zap</td><td>结构化日志，便于采集</td></tr>
+          <tr><td class="td-pri">异步任务</td><td>hibiken/asynq</td><td>基于 Redis 的任务队列（发券、对账、推送）</td></tr>
+          <tr><td class="td-pri">API 文档</td><td>swaggo/swag</td><td>注释生成 OpenAPI 3，前端自动生成 SDK</td></tr>
+          <tr><td class="td-pri">测试</td><td>testing + testify + httptest</td><td>单元测试 + Handler 集成测试</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub"><span class="dot"></span>4.2 架构风格：模块化单体优先</h3>
+      <p>不直接上微服务。采用<strong>「模块化单体（Modular Monolith）」</strong>：一个二进制应用，但按业务域严格分包，模块间只通过明确的 Service 接口调用，禁止跨模块直接访表。未来任一模块成为瓶颈，可整块抽出为独立服务。</p>
+      <div class="arch">
+        <div class="arch-layer"><div class="lbl">业务模块（internal/modules/，按域拆分）</div>
+          <div class="arch-row">
+            <div class="arch-node go">auth<small>认证</small></div>
+            <div class="arch-node go">user<small>用户</small></div>
+            <div class="arch-node go">course<small>课程</small></div>
+            <div class="arch-node go">order<small>订单</small></div>
+            <div class="arch-node go">payment<small>支付</small></div>
+            <div class="arch-node go">learning<small>学习</small></div>
+          </div>
+          <div class="arch-row" style="margin-top:9px;">
+            <div class="arch-node go">marketing<small>营销</small></div>
+            <div class="arch-node go">member<small>会员</small></div>
+            <div class="arch-node go">live<small>直播</small></div>
+            <div class="arch-node go">circle<small>社群</small></div>
+            <div class="arch-node go">finance<small>财务</small></div>
+            <div class="arch-node go">stats<small>数据</small></div>
+          </div>
+        </div>
+        <div class="arch-layer"><div class="lbl">横切基础设施（internal/middleware、pkg/）</div>
+          <div class="arch-row">
+            <div class="arch-node acc">统一响应/错误码</div>
+            <div class="arch-node acc">JWT 鉴权</div>
+            <div class="arch-node acc">RBAC 权限</div>
+            <div class="arch-node acc">日志 &amp; 恢复</div>
+            <div class="arch-node acc">限流 &amp; 跨域</div>
+          </div>
+        </div>
+      </div>
+      <h4>单个模块的内部分层（以 auth 为例）</h4>
+      <ul>
+        <li><code>handler.go</code> —— HTTP 层：参数绑定、调用 service、返回统一响应</li>
+        <li><code>service.go</code> —— 业务逻辑层：编排、事务、调用其他模块的 Service 接口</li>
+        <li><code>repository.go</code> —— 数据访问层：GORM 查询，只操作本模块的表</li>
+        <li><code>dto.go</code> —— 请求/响应结构体 + 校验标签</li>
+        <li><code>model.go</code> —— 数据库模型（GORM struct）</li>
+        <li><code>router.go</code> —— 该模块的路由注册（挂载到全局路由组）</li>
+      </ul>
+      <div class="callout tip"><span class="ct">依赖倒置</span>Service 层依赖<b>接口</b>而非具体实现，Repository 实现接口。这样单元测试可注入 mock，模块拆分时只需替换实现。</div>
+
+      <!-- 5 -->
+      <h2 class="sec" id="s5"><span class="num">05</span>前端技术栈（Vue 全家桶 + uni-app）</h2>
+      <p>核心策略：<strong>全前端统一 Vue 生态</strong>。后台、讲师端、移动端、PC 端、桌面端都是一套 Vue 语言与组件心智，跨端复用最大化。</p>
+      <table>
+        <thead><tr><th>端</th><th>技术栈</th><th>开发顺序</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">管理后台 Web</td><td>Vue3 + Vite + Element Plus + Pinia + Vue Router</td><td><span class="tag core">第 1 批</span></td><td>平台运营中枢，最先做，用于录入数据</td></tr>
+          <tr><td class="td-pri">讲师操作 Web</td><td>Vue3 + Vite + Element Plus（共享组件包）</td><td><span class="tag core">第 1 批</span></td><td>与后台共享 <code>@yanmai/ui</code> 组件</td></tr>
+          <tr><td class="td-pri">小程序 / H5 / APP</td><td>uni-app（Vue3 + Vite）+ uni-ui</td><td><span class="tag core">第 1 批</span></td><td>一套代码出微信小程序 + H5；后期直接补 APP</td></tr>
+          <tr><td class="td-pri">用户 PC 端</td><td>Nuxt 3（Vue SSR）</td><td><span class="tag later">第 2 批</span></td><td>课程页 SSR 利于 SEO</td></tr>
+          <tr><td class="td-pri">桌面客户端</td><td>Tauri 2 + Vue3</td><td><span class="tag later">第 3 批</span></td><td>复用 Web 组件，离线学习</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <span class="ct">为什么后台也改成 Vue？</span>
+        你选了 uni-app，而 uni-app 是 Vue 语法。如果后台用 React，团队要同时维护两套语言、两套组件体系、两套状态管理，<b>心智负担与人力成本翻倍</b>。统一到 Vue + Element Plus，所有端共享 <code>@yanmai/ui</code> 与工具函数，是最省力的选择。
+      </div>
+      <h4>共享包（前端复用的关键）</h4>
+      <div class="grid g3">
+        <div class="card"><h5><span class="ic">UI</span>@yanmai/ui</h5><p>按《UI 设计规范》实现的设计系统组件库（Vue3），各端适配。</p></div>
+        <div class="card"><h5><span class="ic">SDK</span>@yanmai/api-client</h5><p>由后端 OpenAPI <b>自动生成</b>的类型安全 TS SDK，接口变更自动同步。</p></div>
+        <div class="card"><h5><span class="ic">共用</span>@yanmai/shared</h5><p>共享类型、常量、工具函数、校验规则、业务逻辑。</p></div>
+      </div>
+
+      <!-- 6 -->
+      <h2 class="sec" id="s6"><span class="num">06</span>云托管与基础设施</h2>
+      <h3 class="sub"><span class="dot"></span>6.1 云厂商选择</h3>
+      <table>
+        <thead><tr><th>方案</th><th>优势</th><th>顾虑</th><th>建议</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="td-pri">腾讯云<br><span class="tag rec">推荐</span></td>
+            <td>与微信登录/支付/小程序天然同生态；ICP 备案、内容安全、云直播、VOD、CDN 一站式；国内访问快、合规省心</td>
+            <td>需要实名与备案流程</td>
+            <td>面向国内用户的知识付费平台，<b>腾讯云是更合适的选择</b></td>
+          </tr>
+          <tr>
+            <td class="td-pri">Supabase<br><span class="tag alt">备选</span></td>
+            <td>起步极快，托管 Postgres + Storage + Edge Functions，开发体验好</td>
+            <td>国内访问速度与合规需评估；深度定制受限</td>
+            <td>若优先「快速验证原型」，可先用它起步</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3 class="sub"><span class="dot"></span>6.2 云服务清单（腾讯云）</h3>
+      <div class="arch">
+        <div class="arch-layer"><div class="lbl">计算与网关</div>
+          <div class="arch-row">
+            <div class="arch-node hi">轻量应用服务器 / CVM<small>部署 Go 服务</small></div>
+            <div class="arch-node">Nginx / API 网关<small>反向代理 + HTTPS</small></div>
+            <div class="arch-node">CloudBase 云托管<small>备选容器化部署</small></div>
+          </div>
+        </div>
+        <div class="arch-layer"><div class="lbl">数据与存储</div>
+          <div class="arch-row">
+            <div class="arch-node go">云数据库 PostgreSQL<small>主库</small></div>
+            <div class="arch-node go">云 Redis<small>缓存/队列</small></div>
+            <div class="arch-node">COS 对象存储<small>素材/资料</small></div>
+          </div>
+        </div>
+        <div class="arch-layer"><div class="lbl">音视频与安全（后期）</div>
+          <div class="arch-row">
+            <div class="arch-node acc">云点播 VOD<small>转码 + DRM</small></div>
+            <div class="arch-node acc">云直播 CSS<small>低延迟直播</small></div>
+            <div class="arch-node acc">CDN + 内容安全<small>加速 + 审核</small></div>
+          </div>
+        </div>
+      </div>
+      <h3 class="sub"><span class="dot"></span>6.3 环境划分（本地无 Docker 的应对）</h3>
+      <table>
+        <thead><tr><th>环境</th><th>数据库</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">local</td><td><b>云开发库（独立 schema/database）</b></td><td>本机无 Docker，直连云端开发库；<code>.env.local</code> 配置，不入 Git</td></tr>
+          <tr><td class="td-pri">dev</td><td>云开发库</td><td>前后端联调</td></tr>
+          <tr><td class="td-pri">staging</td><td>云预发布库</td><td>与生产同构，用于验收</td></tr>
+          <tr><td class="td-pri">prod</td><td>云生产库（主从 + 自动备份）</td><td>正式环境</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn"><span class="ct">安全约定</span>所有密钥（数据库密码、JWT Secret、支付密钥）只存环境变量，<b>绝不入库、不进 Git</b>；生产库开启自动备份（保留 30 天）与白名单访问。</div>
+
+      <!-- 7 -->
+      <h2 class="sec" id="s7"><span class="num">07</span>工程规范</h2>
+      <div class="grid g2">
+        <div class="card"><h5><span class="ic">分</span>分支策略</h5><p><code>main</code> 生产（受保护）<br><code>develop</code> 集成<br><code>feature/*</code> 功能<br><code>hotfix/*</code> 紧急修复</p></div>
+        <div class="card"><h5><span class="ic">码</span>Go 代码规范</h5><p>gofmt + goimports + golangci-lint；错误统一包装与错误码；禁止 panic 泄露到 HTTP 层</p></div>
+        <div class="card"><h5><span class="ic">前</span>前端代码规范</h5><p>ESLint + Prettier + Husky + lint-staged + commitlint（Conventional Commits）</p></div>
+        <div class="card"><h5><span class="ic">测</span>测试策略</h5><p>Go：单元测试 + httptest 集成测试<br>前端：Vitest 单测<br>E2E：Playwright（核心流程）</p></div>
+        <div class="card"><h5><span class="ic">契</span>接口契约</h5><p>swaggo 生成 OpenAPI → 生成 TS SDK，<b>接口变更必须重新生成 SDK</b>，保证前后端一致</p></div>
+        <div class="card"><h5><span class="ic">发</span>CI/CD</h5><p>GitHub Actions：push 触发 Go lint+test+build、前端 lint+test+build；合并后部署 dev</p></div>
+      </div>
+
+      <!-- 8 -->
+      <h2 class="sec" id="s8"><span class="num">08</span>仓库目录结构</h2>
+      <pre class="tree"><span class="cm">研脉学术知识付费平台/</span>
+├── <span class="c1">apps/</span>                          <span class="cm"># 各端前端应用</span>
+│   ├── admin-web/               <span class="cm"># 管理后台 (Vue3 + Vite + Element Plus)</span>
+│   ├── lecturer-web/            <span class="cm"># 讲师工作台 (Vue3 + Element Plus)</span>
+│   ├── user-uniapp/             <span class="cm"># 小程序 + H5 + APP (uni-app, Vue3)</span>
+│   ├── user-web/                <span class="cm"># 用户 PC 端 (Nuxt3) —— 后置</span>
+│   └── desktop/                 <span class="cm"># 桌面客户端 (Tauri + Vue3) —— 后置</span>
+├── <span class="c2">services/</span>
+│   └── api/                     <span class="cm"># 后端 (Go + Gin)</span>
+│       ├── cmd/server/main.go   <span class="cm"># 程序入口</span>
+│       ├── internal/
+│       │   ├── modules/         <span class="cm"># auth / user / course / order / payment ...</span>
+│       │   │   └── auth/        <span class="cm"># handler / service / repository / dto / model / router</span>
+│       │   ├── middleware/      <span class="cm"># 鉴权 / 日志 / 恢复 / 限流 / 跨域</span>
+│       │   ├── config/          <span class="cm"># Viper 配置加载</span>
+│       │   └── router/          <span class="cm"># 全局路由聚合</span>
+│       ├── pkg/                 <span class="cm"># 公共库: response / errs / jwt / logger / hash</span>
+│       ├── migrations/          <span class="cm"># golang-migrate SQL 迁移脚本</span>
+│       ├── docs/                <span class="cm"># swag 生成的 OpenAPI 文档</span>
+│       ├── go.mod
+│       └── .env.example
+├── <span class="c3">packages/</span>
+│   ├── ui/                      <span class="cm"># @yanmai/ui 设计系统组件库 (Vue3)</span>
+│   ├── api-client/              <span class="cm"># @yanmai/api-client 自动生成的 TS SDK</span>
+│   ├── shared/                  <span class="cm"># @yanmai/shared 共享类型/常量/工具</span>
+│   └── config/                  <span class="cm"># eslint / prettier / tsconfig 共享配置</span>
+├── <span class="c1">infra/</span>                        <span class="cm"># nginx 配置 / 部署脚本 / 数据库初始化 SQL</span>
+├── <span class="c1">docs/</span>                         <span class="cm"># 产品功能文档 / UI设计规范 / 本开发计划</span>
+├── .github/workflows/           <span class="cm"># CI/CD (api.yml / web.yml)</span>
+├── pnpm-workspace.yaml
+├── turbo.json
+└── package.json
+</pre>
+
+      <!-- 9 -->
+      <h2 class="sec" id="s9"><span class="num">09</span>阶段规划与里程碑</h2>
+      <p>共 <strong>14 个阶段</strong>，每阶段一个确认门禁。</p>
+
+      <h3 class="sub"><span class="dot"></span>Phase 0 — 技术选型与架构设计 <span class="ph">已完成（本文档）</span></h3>
+      <p>产出：本开发计划 + 技术栈锁定。</p>
+
+      <h3 class="sub"><span class="dot"></span>Phase 1 — 工程骨架（Walking Skeleton）<span class="ph">下一个确认点 ⭐</span></h3>
+      <p>目标：交付一个「能跑起来、能登录、能调通接口」的空壳项目。技术栈：Go+Gin / Vue3+Element Plus / uni-app / 云 PostgreSQL。</p>
+      <ul class="check">
+        <li>Monorepo 初始化（pnpm workspace + Turborepo），apps/packages/services 目录就位</li>
+        <li>Go 后端骨架：Gin 路由、全域模块占位（auth/user/course/... 空实现）、<code>GET /health</code>、统一响应与全局异常、zap 日志</li>
+        <li>配置管理：Viper 加载 <code>.env</code>，提供 <code>.env.example</code>；云 PostgreSQL 连接打通</li>
+        <li>数据库：GORM 接入 + golang-migrate 首个迁移（<code>users</code> 表）+ 种子数据</li>
+        <li>认证骨架：注册 / 登录 / JWT 双 Token / 刷新 / 鉴权中间件</li>
+        <li>管理后台骨架（Vue3）：能打开登录页 → 登录成功 → 进入 Dashboard 占位页 → 调通一个受保护接口</li>
+        <li>uni-app 骨架：能编译出微信小程序与 H5，包含首页占位</li>
+        <li>共享包接线：@yanmai/ui / @yanmai/api-client（OpenAPI 生成）/ @yanmai/shared / @yanmai/config</li>
+        <li>工程规范：golangci-lint + gofmt；ESLint + Prettier + Husky + commitlint 生效</li>
+        <li>CI：GitHub Actions 跑通 Go（lint+test+build）与前端（lint+build）</li>
+        <li>测试：Go 1 个单元测试 + 1 个 httptest 集成测试；前端 1 个冒烟测试，全绿</li>
+        <li>文档：README（如何启动本地开发）+ API 文档可访问</li>
+      </ul>
+      <div class="callout tip"><span class="ct">Phase 1 验收标准</span>
+        ① 后端起服务后 <code>curl /health</code> 返回正常；<br>
+        ② 前端 <code>pnpm dev</code> 能打开后台登录页，用种子账号登录成功，看到 Dashboard 占位页；<br>
+        ③ uni-app 能编译出小程序包；<br>
+        ④ CI 全绿。<b>达标后暂停，向你演示并确认。</b>
+      </div>
+
+      <h3 class="sub"><span class="dot"></span>Phase 2 — 账号与权限体系（首个业务切片）</h3>
+      <p>手机号/微信登录、用户中心、RBAC 角色权限、后台用户管理、多端统一身份打通。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 3 — 课程内容中心</h3>
+      <p>分类体系、课程 SPU/SKU、章节课时、素材上传（COS）、讲师建课、后台审核、上下架。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 4 — 课程展示与检索（用户端）</h3>
+      <p>uni-app 课程列表、详情、搜索、分类筛选、讲师主页。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 5 — 订单与支付</h3>
+      <p>购物车、下单、微信/支付宝支付、支付回调、权益开通、退款工单。🔒 关键闭环节点。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 6 — 学习中心</h3>
+      <p>云点播 VOD 接入（DRM）、播放器、学习进度、笔记、打卡。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 7 — 营销中心</h3>
+      <p>优惠券 → 拼团 → 秒杀 → 分销推广（分步交付，每个子功能独立验收）。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 8 — 会员与积分</h3>
+      <p>会员卡、权益、积分体系、成长等级。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 9 — 直播</h3>
+      <p>直播间、互动（弹幕/打赏/问答）、回放、直播带货。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 10 — 训练营与作业</h3>
+      <p>班级制、作业布置与批改、结业证书、督学。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 11 — 圈子社群</h3>
+      <p>圈子、话题、问答、打卡、资料库、私信 IM。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 12 — 财务结算与数据看板</h3>
+      <p>讲师分成结算、佣金结算、提现审批、经营数据看板。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 13 — 扩展端</h3>
+      <p>用户 PC 端（Nuxt SEO）→ APP（uni-app 打包）→ 桌面客户端（Tauri 离线学习）。</p>
+      <h3 class="sub"><span class="dot"></span>Phase 14 — 上线与优化</h3>
+      <p>压测、安全加固、性能优化、监控告警、灰度上线。</p>
+
+      <!-- 10 -->
+      <h2 class="sec" id="s10"><span class="num">10</span>完整度定义（Definition of Done）</h2>
+      <p>任何功能只有同时满足以下全部条件，才算「完成」：</p>
+      <table>
+        <thead><tr><th>类别</th><th>标准</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">功能</td><td>需求全部实现，边界场景（空数据、超长文本、无权限、并发）已处理</td></tr>
+          <tr><td class="td-pri">测试</td><td>单元测试覆盖核心逻辑，接口集成测试通过，核心流程 E2E 通过</td></tr>
+          <tr><td class="td-pri">质量</td><td>golangci-lint / ESLint 零错误，Go 错误处理规范，前端无类型错误</td></tr>
+          <tr><td class="td-pri">安全</td><td>权限校验到位，输入校验完整，无敏感信息泄露</td></tr>
+          <tr><td class="td-pri">契约</td><td>OpenAPI 文档已更新，前端 SDK 已重新生成</td></tr>
+          <tr><td class="td-pri">可运行</td><td>能一键启动、可演示、迁移可回滚</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 11 -->
+      <h2 class="sec" id="s11"><span class="num">11</span>风险与应对</h2>
+      <table>
+        <thead><tr><th>风险</th><th>影响</th><th>应对策略</th></tr></thead>
+        <tbody>
+          <tr><td class="td-pri">前后端类型不同步</td><td>Go 与 TS 无类型共享，接口易漂移</td><td>强制 OpenAPI 契约驱动：后端改接口必须重新生成前端 SDK，CI 校验</td></tr>
+          <tr><td class="td-pri">Go 版本为 32 位</td><td>编译/内存受限</td><td>建议升级为 64 位 Go；Phase 1 前完成</td></tr>
+          <tr><td class="td-pri">无 Docker 本地环境</td><td>本地开发依赖云端库</td><td>直连云开发库 + <code>.env.local</code>；必要时再装 Docker Desktop</td></tr>
+          <tr><td class="td-pri">uni-app 复杂交互受限</td><td>部分高级界面体验打折</td><td>优先用 uni-app 原生组件与分包；个别极端页面可用原生小程序页面兜底</td></tr>
+          <tr><td class="td-pri">范围蔓延</td><td>六端全量开发，周期失控</td><td>严格按垂直切片推进，新需求进 backlog 不插队</td></tr>
+          <tr><td class="td-pri">支付/直播对接复杂</td><td>关键节点延期</td><td>Phase 5 / 9 前预留联调期，先用沙箱环境打通</td></tr>
+          <tr><td class="td-pri">内容合规</td><td>审核风险</td><td>风控与审核能力在 Phase 3 内容中心同步内置</td></tr>
+        </tbody>
+      </table>
+
+      <!-- 12 -->
+      <h2 class="sec" id="s12"><span class="num">12</span>下一步</h2>
+      <div class="callout tip">
+        <span class="ct">待你确认</span>
+        技术栈已锁定。确认本修订方案后，我将立即开始搭建 <b>Phase 1 工程骨架</b>：
+        Monorepo 结构 + Go/Gin 后端骨架 + 云 PostgreSQL 连接 + 认证骨架 + Vue3 管理后台登录页 + uni-app 骨架 + CI。
+        搭建完成后向你演示，你确认通过后再进入 Phase 2。
+      </div>
+      <h4>还剩一个小决策（不阻塞开工）</h4>
+      <table>
+        <thead><tr><th>决策项</th><th>我的推荐</th><th>备选</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="td-pri">云厂商</td>
+            <td><b>腾讯云</b> —— 与微信生态/ICP/内容安全同源，国内合规省心</td>
+            <td>Supabase —— 起步更快，但国内速度与合规需评估</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <footer>
+        <span>研脉学术知识付费平台 · 开发计划与技术选型 v1.1（栈已锁定）</span>
+        <span>研脉学术（北京）智能科技有限公司 · 内部资料</span>
+      </footer>
+    </div>
+  </main>
+</div>
+<script>
+  var prog = document.getElementById('prog');
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement;
+    prog.style.width = (h.scrollTop/(h.scrollHeight-h.clientHeight)*100) + '%';
+  });
+  var links = document.querySelectorAll('#nav a'); var secs=[];
+  links.forEach(function(a){ var el=document.getElementById(a.getAttribute('href').slice(1)); if(el) secs.push({el:el,a:a}); });
+  window.addEventListener('scroll', function(){
+    var y=window.scrollY+120, cur=null;
+    secs.forEach(function(s){ if(s.el.offsetTop<=y) cur=s; });
+    links.forEach(function(a){a.classList.remove('active');});
+    if(cur) cur.a.classList.add('active');
+  });
+</script>
+</body>
+</html>

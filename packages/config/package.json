@@ -1,0 +1,21 @@
+{
+  "name": "@yanmai/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "研脉学术知识付费平台 · 前端共享工程配置（ESLint / Prettier / TypeScript）",
+  "exports": {
+    "./eslint": "./eslint/index.js",
+    "./prettier": "./prettier/index.json",
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/vue.json": "./tsconfig/vue.json"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.30.0",
+    "globals": "^15.11.0",
+    "typescript-eslint": "^8.11.0",
+    "vue-eslint-parser": "^9.4.3"
+  }
+}

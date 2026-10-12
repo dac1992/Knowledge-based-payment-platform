@@ -1,0 +1,57 @@
+# ============================================================
+# 行尾与二进制规范
+# 目的：无论开发者使用 Windows / macOS / Linux，入库内容保持一致，
+#       避免 CRLF 污染导致 CI 上的 Shell 脚本与 Go 构建异常。
+# ============================================================
+
+# 默认：自动识别文本，入库统一 LF；检出时按平台自动转换
+* text=auto eol=lf
+
+# ---------- 必须保持 LF ----------
+# CI（ubuntu-latest）与容器内通过 bash 执行，CRLF 会导致
+# "bash: $'\r': command not found"
+*.sh   text eol=lf
+*.sql  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Go 源码与模块文件由 gofmt / go mod 统一为 LF
+*.go    text eol=lf
+go.mod  text eol=lf
+go.sum  text eol=lf
+
+# ---------- 必须保持 CRLF ----------
+# Windows 批处理对行尾敏感，LF 会导致命令解析失败
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# ---------- 二进制文件（禁止任何行尾转换与差异比较） ----------
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.webp    binary
+*.ico     binary
+*.svg     text eol=lf
+*.woff    binary
+*.woff2   binary
+*.ttf     binary
+*.eot     binary
+*.otf     binary
+*.pdf     binary
+*.zip     binary
+*.gz      binary
+*.7z      binary
+*.exe     binary
+*.dll     binary
+*.so      binary
+*.dylib   binary
+*.xlsx    binary
+*.docx    binary
+*.pptx    binary
+
+# ---------- 语言检测（GitHub Linguist）----------
+# pnpm-lock.yaml 体量大且为机器生成，不计入语言统计
+pnpm-lock.yaml linguist-generated=true
+services/api/docs/swagger.json linguist-generated=true
+services/api/docs/swagger.yaml linguist-generated=true

@@ -1,0 +1,66 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--ym-font-sans);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ym-ink);
+  background: var(--ym-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  height: 100%;
+}
+
+a {
+  color: var(--ym-primary);
+  text-decoration: none;
+}
+
+.ym-card {
+  background: var(--ym-card);
+  border: 1px solid var(--ym-line);
+  border-radius: var(--ym-radius);
+  box-shadow: var(--ym-shadow-sm);
+}
+
+.ym-section-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ym-ink);
+}
+
+.ym-muted {
+  color: var(--ym-ink-3);
+}
+
+.ym-mono {
+  font-family: var(--ym-font-mono);
+  font-size: 12.5px;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d5dae4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c0c7d4;
+}

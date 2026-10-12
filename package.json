@@ -1,0 +1,32 @@
+{
+  "name": "yanmai-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "研脉学术知识付费平台 — Monorepo (apps / services / packages)",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean",
+    "dev:admin": "pnpm --filter @yanmai/admin-web dev",
+    "dev:lecturer": "pnpm --filter @yanmai/lecturer-web dev",
+    "dev:mp": "pnpm --filter @yanmai/user-uniapp dev:mp-weixin",
+    "dev:h5": "pnpm --filter @yanmai/user-uniapp dev:h5",
+    "api:run": "cd services/api && go run ./cmd/server",
+    "api:build": "cd services/api && go build ./...",
+    "api:test": "cd services/api && go test ./... -cover",
+    "api:lint": "cd services/api && go vet ./... && gofmt -l .",
+    "api:tidy": "cd services/api && go mod tidy"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.0"
+  }
+}

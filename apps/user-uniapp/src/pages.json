@@ -1,0 +1,32 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "研脉学术"
+      }
+    },
+    {
+      "path": "pages/course/index",
+      "style": {
+        "navigationBarTitleText": "课程中心"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "研脉学术",
+    "navigationBarBackgroundColor": "#1A56DB",
+    "backgroundColor": "#F4F6FA"
+  },
+  "tabBar": {
+    "color": "#6B7688",
+    "selectedColor": "#1A56DB",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/course/index", "text": "课程" }
+    ]
+  }
+}

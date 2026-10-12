@@ -1,0 +1,46 @@
+# ---------- 依赖 ----------
+node_modules/
+.pnpm-store/
+
+# ---------- 构建产物 ----------
+dist/
+build/
+unpackage/
+*.tsbuildinfo
+
+# ---------- 环境变量（密钥绝不入库） ----------
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ---------- Go ----------
+services/api/bin/
+services/api/tmp/
+*.exe
+*.test
+coverage.out
+coverage.html
+coverage.txt
+
+# ---------- 编辑器 / 系统 ----------
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# ---------- 日志 ----------
+*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# ---------- 缓存 ----------
+.cache/
+.turbo/
+.tmp/
+
+# ---------- 本地 AI 工作数据（记忆、本地配置，不入库） ----------
+.workbuddy/

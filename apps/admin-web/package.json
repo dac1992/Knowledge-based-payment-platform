@@ -1,0 +1,38 @@
+{
+  "name": "@yanmai/admin-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "研脉学术知识付费平台 · 管理后台 Web",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit -p tsconfig.json && vite build",
+    "build:only": "vite build",
+    "preview": "vite preview --port 4173",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
+    "@yanmai/api-client": "workspace:*",
+    "@yanmai/shared": "workspace:*",
+    "@yanmai/ui": "workspace:*",
+    "element-plus": "^2.8.6",
+    "pinia": "^2.2.4",
+    "vue": "^3.5.12",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "@vue/test-utils": "^2.4.6",
+    "@yanmai/config": "workspace:*",
+    "eslint": "^9.13.0",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.3.0",
+    "vite": "5.2.8",
+    "vitest": "^2.1.0",
+    "vue-tsc": "^2.1.8"
+  }
+}
