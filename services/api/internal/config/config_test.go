@@ -112,6 +112,25 @@ func TestValidateAggregatesAllProblems(t *testing.T) {
 	}
 }
 
+// 健康探测超时为零值时必须回落，否则 context.WithTimeout(ctx, 0) 会让探测立即超时，
+// /health 会对可用数据库误报 degraded。测试中手工构造的 Config 正会命中该零值路径。
+func TestPingTimeoutFallsBackWhenUnset(t *testing.T) {
+	var d Database
+	if got := d.PingTimeoutOrDefault(); got != 5*time.Second {
+		t.Fatalf("零值应回落为 5s，实际 %s", got)
+	}
+
+	d.PingTimeout = 9 * time.Second
+	if got := d.PingTimeoutOrDefault(); got != 9*time.Second {
+		t.Fatalf("应返回显式配置值，实际 %s", got)
+	}
+
+	d.PingTimeout = -1 * time.Second
+	if got := d.PingTimeoutOrDefault(); got != 5*time.Second {
+		t.Fatalf("负值应回落为 5s，实际 %s", got)
+	}
+}
+
 func TestSafeDSNMasksPassword(t *testing.T) {
 	cfg := baseConfig()
 	cfg.Database.DSN = "postgres://yanmai:SuperSecret123@10.0.0.5:5432/yanmai_dev?sslmode=require"

@@ -112,6 +112,30 @@ func TestHealthEndpointReportsDatabaseStatus(t *testing.T) {
 	}
 }
 
+// uptime 表示进程运行时长，latency 表示单次数据库探测耗时，二者语义不同。
+// 曾因复用同一个 start 变量导致 uptime 恒等于 latency（对外表现为「3.0003691s」这类探测耗时）。
+// 此处通过注入进程启动时刻来验证 uptime 确实取自进程运行时长。
+func TestHealthUptimeReflectsProcessRuntime(t *testing.T) {
+	original := processStart
+	// 多减 100ms，确保 Truncate 到秒后稳定落在 1h30m0s
+	processStart = time.Now().Add(-90*time.Minute - 100*time.Millisecond)
+	defer func() { processStart = original }()
+
+	e := newTestEngine(t, testConfig())
+
+	_, env := call(t, e, http.MethodGet, "/health", "", nil)
+
+	var data struct {
+		Uptime string `json:"uptime"`
+	}
+	if err := json.Unmarshal(env.Data, &data); err != nil {
+		t.Fatalf("解析 data 失败: %v", err)
+	}
+	if data.Uptime != "1h30m0s" {
+		t.Errorf("uptime 应为进程运行时长 1h30m0s，实际 %s", data.Uptime)
+	}
+}
+
 func TestHealthReadyReturns503WhenDatabaseDown(t *testing.T) {
 	e := newTestEngine(t, testConfig())
 

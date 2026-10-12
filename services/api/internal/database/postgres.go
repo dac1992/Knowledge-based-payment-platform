@@ -21,7 +21,6 @@ func New(cfg *config.Config, log *zap.Logger) (*gorm.DB, error) {
 	}), &gorm.Config{
 		Logger:                 newGormLogger(log, cfg),
 		SkipDefaultTransaction: true,
-		PrepareStmt:            true,
 		NowFunc:                time.Now,
 	})
 	if err != nil {
@@ -35,8 +34,9 @@ func New(cfg *config.Config, log *zap.Logger) (*gorm.DB, error) {
 	sqlDB.SetMaxOpenConns(cfg.Database.MaxOpenConns)
 	sqlDB.SetMaxIdleConns(cfg.Database.MaxIdleConns)
 	sqlDB.SetConnMaxLifetime(cfg.Database.ConnMaxLifetime)
+	sqlDB.SetConnMaxIdleTime(cfg.Database.ConnMaxIdleTime)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.Database.PingTimeoutOrDefault())
 	defer cancel()
 	if err := sqlDB.PingContext(ctx); err != nil {
 		_ = sqlDB.Close()
@@ -46,6 +46,7 @@ func New(cfg *config.Config, log *zap.Logger) (*gorm.DB, error) {
 	log.Info("PostgreSQL 连接就绪",
 		zap.String("dsn", cfg.Database.SafeDSN()),
 		zap.Int("maxOpenConns", cfg.Database.MaxOpenConns),
+		zap.Duration("connMaxIdleTime", cfg.Database.ConnMaxIdleTime),
 	)
 	return db, nil
 }

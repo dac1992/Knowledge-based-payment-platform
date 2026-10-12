@@ -76,8 +76,24 @@ type Database struct {
 	MaxOpenConns    int
 	MaxIdleConns    int
 	ConnMaxLifetime time.Duration
-	AutoMigrate     bool
-	Seed            bool
+	// ConnMaxIdleTime 空闲连接的最大存活时间。云数据库（Neon/PgBouncer/云厂商托管）
+	// 会主动断开长时间空闲的连接，而 Go 的连接池默认不会主动淘汰空闲连接，
+	// 结果就是「池里握着一条已被对端关闭的连接」，下一个请求直接踩雷。
+	ConnMaxIdleTime time.Duration
+	// PingTimeout 健康检查的单次探测超时。跨地域云数据库（尤其经代理转发时）
+	// 新建连接需数秒，超时过紧会让 /health 常态误报降级。
+	PingTimeout time.Duration
+	AutoMigrate bool
+	Seed        bool
+}
+
+// PingTimeoutOrDefault 返回健康探测超时；零值时回落到 5s，
+// 避免未初始化的配置（如测试中手工构造的 Config）导致探测立即超时。
+func (d Database) PingTimeoutOrDefault() time.Duration {
+	if d.PingTimeout <= 0 {
+		return 5 * time.Second
+	}
+	return d.PingTimeout
 }
 
 // SafeDSN 返回脱敏后的连接串，用于日志输出。
@@ -151,6 +167,8 @@ func Load() (*Config, error) {
 			MaxOpenConns:    v.GetInt("DB_MAX_OPEN_CONNS"),
 			MaxIdleConns:    v.GetInt("DB_MAX_IDLE_CONNS"),
 			ConnMaxLifetime: v.GetDuration("DB_CONN_MAX_LIFETIME"),
+			ConnMaxIdleTime: v.GetDuration("DB_CONN_MAX_IDLE_TIME"),
+			PingTimeout:     v.GetDuration("DB_PING_TIMEOUT"),
 			AutoMigrate:     v.GetBool("DB_AUTO_MIGRATE"),
 			Seed:            v.GetBool("DB_SEED"),
 		},
@@ -229,6 +247,8 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("DB_MAX_OPEN_CONNS", 20)
 	v.SetDefault("DB_MAX_IDLE_CONNS", 10)
 	v.SetDefault("DB_CONN_MAX_LIFETIME", "30m")
+	v.SetDefault("DB_CONN_MAX_IDLE_TIME", "4m")
+	v.SetDefault("DB_PING_TIMEOUT", "5s")
 	v.SetDefault("DB_AUTO_MIGRATE", true)
 	v.SetDefault("DB_SEED", false)
 

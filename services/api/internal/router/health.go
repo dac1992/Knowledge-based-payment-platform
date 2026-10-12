@@ -41,12 +41,15 @@ func registerHealth(r *gin.Engine, cfg *config.Config, db *gorm.DB) {
 	})
 }
 
+// processStart 记录进程启动时刻，用于 /health 暴露运行时长。
+var processStart = time.Now()
+
 func buildHealth(cfg *config.Config, db *gorm.DB) gin.H {
 	dbStatus := "up"
 	dbError := ""
-	start := time.Now()
+	probeStart := time.Now()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.Database.PingTimeoutOrDefault())
 	defer cancel()
 
 	if err := database.Ping(ctx, db); err != nil {
@@ -62,7 +65,7 @@ func buildHealth(cfg *config.Config, db *gorm.DB) gin.H {
 	// 先组装 database 子对象，避免对其做类型断言后再写入
 	dbInfo := gin.H{
 		"status":  dbStatus,
-		"latency": time.Since(start).String(),
+		"latency": time.Since(probeStart).String(),
 	}
 	if dbError != "" {
 		dbInfo["error"] = dbError
@@ -74,7 +77,7 @@ func buildHealth(cfg *config.Config, db *gorm.DB) gin.H {
 		"env":      cfg.App.Env,
 		"version":  config.Version,
 		"time":     time.Now().Format(time.RFC3339),
-		"uptime":   time.Since(start).String(),
+		"uptime":   time.Since(processStart).Truncate(time.Second).String(),
 		"database": dbInfo,
 	}
 }
